@@ -1,4 +1,4 @@
-package com.jiabangou.ninja.vertx.standalone;
+package com.jiabangou.ninja.vertx.standalone.utils;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;

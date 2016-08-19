@@ -1,7 +1,6 @@
 package com.jiabangou.ninja.vertx.standalone;
 
 import com.google.inject.Injector;
-import io.vertx.core.VertxOptions;
 import ninja.standalone.AbstractStandalone;
 
 /**
@@ -11,8 +10,6 @@ import ninja.standalone.AbstractStandalone;
 public class NinjaVertx extends AbstractStandalone<NinjaVertx> {
 
     private volatile NinjaVertxBootstrap ninjaVertxBootstrap;
-
-    protected VertxOptions options;
 
     public NinjaVertx() {
         super("NinjaVertx");
@@ -25,7 +22,6 @@ public class NinjaVertx extends AbstractStandalone<NinjaVertx> {
 
     @Override
     protected void doConfigure() throws Exception {
-        options = new VertxOptions();
 
         // fetch instance variable into method, so that we access the volatile
         // global variable only once - that's better performance wise.
@@ -34,7 +30,7 @@ public class NinjaVertx extends AbstractStandalone<NinjaVertx> {
                 if (ninjaVertxBootstrap == null) {
                     VertxInitializer.setNinjaVertx(this);
 
-                    ninjaVertxBootstrap = new NinjaVertxBootstrap(ninjaProperties);
+                    ninjaVertxBootstrap = new NinjaVertxBootstrap(ninjaProperties, getContextPath());
 
                 }
             }
@@ -43,21 +39,32 @@ public class NinjaVertx extends AbstractStandalone<NinjaVertx> {
 
     @Override
     protected void doStart() throws Exception {
-        ninjaVertxBootstrap.boot();
+        try {
+            this.ninjaVertxBootstrap.boot();
+        } catch (Exception e) {
+            throw tryToUnwrapInjectorException(e);
+        }
     }
 
     @Override
     protected void doJoin() throws Exception {
-
+        // vertx doesn't let us join it, so we'll instead wait ourselves
+        synchronized(this) {
+            this.wait();
+        }
     }
 
     @Override
     protected void doShutdown() {
-        ninjaVertxBootstrap.shutdown();
+        if (ninjaVertxBootstrap != null) {
+            ninjaVertxBootstrap.shutdown();
+            ninjaVertxBootstrap = null;
+        }
     }
 
     @Override
     public Injector getInjector() {
+        checkStarted();
         return ninjaVertxBootstrap.getInjector();
     }
 }

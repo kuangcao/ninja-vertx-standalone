@@ -12,14 +12,21 @@ import ninja.utils.NinjaPropertiesImpl;
 public class NinjaVertxBootstrap extends Bootstrap {
 
 
-    public NinjaVertxBootstrap(NinjaPropertiesImpl ninjaProperties) {
+    private String contextPath;
+
+    public String getContextPath() {
+        return contextPath;
+    }
+
+    public NinjaVertxBootstrap(NinjaPropertiesImpl ninjaProperties, String contextPath) {
         super(ninjaProperties);
+        this.contextPath = contextPath;
     }
 
     @Override
     protected void configure() throws Exception {
         super.configure();
-        NinjaVerticle.setBootstrap(this);
+        NinjaHandler.setBootstrap(this);
 
         // Context for servlet requests
         addModule(new AbstractModule() {

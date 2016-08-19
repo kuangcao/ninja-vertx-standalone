@@ -1,4 +1,4 @@
-package com.jiabangou.ninja.vertx.standalone;
+package com.jiabangou.ninja.vertx.standalone.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -9,8 +9,7 @@ import java.util.TimeZone;
  * ThreadLocal data parsers for HTTP style dates
  *
  */
-class DateParser
-{
+public class DateParser {
     private static final TimeZone __GMT = TimeZone.getTimeZone("GMT");
     static
     {

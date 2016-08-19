@@ -15,12 +15,6 @@ public class NinjaVerticle extends AbstractVerticle {
 
     static final private Logger log = LoggerFactory.getLogger(NinjaVerticle.class);
 
-    private static Bootstrap bootstrap;
-
-    public static void setBootstrap(Bootstrap bootstrap) {
-        NinjaVerticle.bootstrap = bootstrap;
-    }
-
     private static int port = 8080;
 
     public static void setPort(int port) {
@@ -33,7 +27,7 @@ public class NinjaVerticle extends AbstractVerticle {
     @Override
     public void start() throws Exception {
         Router router = Router.router(vertx);
-        router.route().handler(NinjaHandler.create(bootstrap));
+        router.route().handler(NinjaHandler.create());
         httpServer = vertx.createHttpServer();
         httpServer.requestHandler(router::accept).listen(port, res -> {
             if (res.succeeded()) {

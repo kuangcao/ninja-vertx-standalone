@@ -1,5 +1,6 @@
 package com.jiabangou.ninja.vertx.standalone;
 
+import com.jiabangou.ninja.vertx.standalone.utils.DateParser;
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
@@ -28,6 +29,7 @@ public class VertxHttpServletRequest implements HttpServletRequest {
     private int serverPort;
     private String remoteAddress;
 
+    private String contextPath;
 
     public VertxHttpServletRequest(RoutingContext event) {
         this.httpServerRequest = event.request();
@@ -77,6 +79,7 @@ public class VertxHttpServletRequest implements HttpServletRequest {
             return null;
         }
         Cookie cookie = new Cookie(vertxCookie.getName(), vertxCookie.getValue());
+
         cookie.setDomain(nettyCookie.domain());
         cookie.setHttpOnly(nettyCookie.isHttpOnly());
         cookie.setMaxAge((int) nettyCookie.maxAge());
@@ -145,7 +148,11 @@ public class VertxHttpServletRequest implements HttpServletRequest {
 
     @Override
     public String getContextPath() {
-        return "";
+        return contextPath;
+    }
+
+    public void setContextPath(String contextPath) {
+        this.contextPath = contextPath;
     }
 
     @Override

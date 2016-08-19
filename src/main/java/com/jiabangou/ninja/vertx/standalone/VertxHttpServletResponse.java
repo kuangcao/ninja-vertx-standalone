@@ -1,10 +1,10 @@
 package com.jiabangou.ninja.vertx.standalone;
 
+import com.jiabangou.ninja.vertx.standalone.utils.DateGenerator;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.impl.LocaleImpl;
-import ninja.Result;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Locale;
 
@@ -132,11 +133,6 @@ public class VertxHttpServletResponse implements HttpServletResponse {
     @Override
     public void setStatus(int i) {
         resp.setStatusCode(i);
-//        if (i >= Result.SC_300_MULTIPLE_CHOICES && i <= Result.SC_307_TEMPORARY_REDIRECT) {
-//            if (!resp.ended()) {
-//                resp.end();
-//            }
-//        }
     }
 
     @Override
@@ -169,10 +165,9 @@ public class VertxHttpServletResponse implements HttpServletResponse {
     public String getCharacterEncoding() {
 
         if (_characterEncoding == null)
-            _characterEncoding = HttpUtils.__UTF8;
+            _characterEncoding = StandardCharsets.UTF_8.name();
         return _characterEncoding;
     }
-
 
     @Override
     public String getContentType() {
