@@ -19,7 +19,7 @@ ninja-vertx-standalone is compiled with Java 8, whereas Ninja supports Java 7+.
 
 ## Usage
 
-ninja-vertx-standalone is on maven central.  The version will always be the Ninja
+ninja-vertx-standalone is on sonatype maven central.  The version will always be the Ninja
 version it was compiled against + `Vert.X3` which represents the Vertx.X
 build increment.  As of Ninja v5.4.0, as long as you don't have `ninja.standalone.NinjaJetty`
 on your classpath, Ninja will automatically find ninja-vertx-standalone and use it
