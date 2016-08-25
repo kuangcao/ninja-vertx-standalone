@@ -8,6 +8,7 @@ import io.vertx.core.VertxOptions;
 import io.vertx.core.metrics.MetricsOptions;
 import ninja.lifecycle.Dispose;
 import ninja.lifecycle.Start;
+import ninja.utils.NinjaProperties;
 import ninja.utils.OverlayedNinjaProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +42,8 @@ public class VertxInitializer {
     private OverlayedNinjaProperties overlayedNinjaProperties;
 
     @Inject
-    public VertxInitializer() {
-        this.overlayedNinjaProperties = new OverlayedNinjaProperties(ninjaVertx.getNinjaProperties());
+    public VertxInitializer(NinjaProperties ninjaProperties) {
+        this.overlayedNinjaProperties = new OverlayedNinjaProperties(ninjaProperties);
     }
 
     @Start(order = 90)

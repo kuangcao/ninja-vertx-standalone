@@ -135,6 +135,5 @@ public class DateGenerator {
             buf.append((char) (i / 10 + 48));
             buf.append((char) (i % 10 + 48));
         }
-
     }
 }
