@@ -182,7 +182,7 @@ public class VertxHttpServletRequest implements HttpServletRequest {
 
     @Override
     public String getRequestURI() {
-        return httpServerRequest.uri();
+        return httpServerRequest.path();
     }
 
     @Override
