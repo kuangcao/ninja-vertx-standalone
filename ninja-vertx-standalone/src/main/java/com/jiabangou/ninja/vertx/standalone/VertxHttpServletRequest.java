@@ -2,6 +2,7 @@ package com.jiabangou.ninja.vertx.standalone;
 
 import com.jiabangou.ninja.vertx.standalone.utils.DateParser;
 import io.vertx.core.MultiMap;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
 
@@ -57,11 +58,12 @@ public class VertxHttpServletRequest implements HttpServletRequest {
 
     static io.netty.handler.codec.http.cookie.Cookie getNettyCookie(io.vertx.ext.web.Cookie cookie) {
         if (nettyCookieField == null) {
-            Field[] fields = io.vertx.ext.web.Cookie.class.getDeclaredFields();
+            Field[] fields = io.vertx.ext.web.impl.CookieImpl.class.getDeclaredFields();
             Field.setAccessible(fields, true);
             for (Field field : fields) {
                 if ("nettyCookie".equals(field.getName())) {
                     nettyCookieField = field;
+                    break;
                 }
             }
         }
@@ -79,8 +81,9 @@ public class VertxHttpServletRequest implements HttpServletRequest {
             return null;
         }
         Cookie cookie = new Cookie(vertxCookie.getName(), vertxCookie.getValue());
-
-        cookie.setDomain(nettyCookie.domain());
+        if (nettyCookie.domain() != null) {
+            cookie.setDomain(nettyCookie.domain());
+        }
         cookie.setHttpOnly(nettyCookie.isHttpOnly());
         cookie.setMaxAge((int) nettyCookie.maxAge());
         cookie.setPath(nettyCookie.path());
@@ -305,6 +308,9 @@ public class VertxHttpServletRequest implements HttpServletRequest {
 
     @Override
     public ServletInputStream getInputStream() throws IOException {
+        if (event.getBody() == null) {
+            return null;
+        }
         ByteArrayInputStream is = new ByteArrayInputStream(event.getBody().getBytes());
         return new VertxServletInputStream(is);
     }

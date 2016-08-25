@@ -3,6 +3,8 @@ package com.jiabangou.ninja.vertx.standalone;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.ext.web.handler.CookieHandler;
 import ninja.Bootstrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +29,8 @@ public class NinjaVerticle extends AbstractVerticle {
     @Override
     public void start() throws Exception {
         Router router = Router.router(vertx);
+        router.route().handler(BodyHandler.create());
+        router.route().handler(CookieHandler.create());
         router.route().handler(NinjaHandler.create());
         httpServer = vertx.createHttpServer();
         httpServer.requestHandler(router::accept).listen(port, res -> {

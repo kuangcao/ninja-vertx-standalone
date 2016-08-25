@@ -172,10 +172,11 @@ public class NinjaVertxTest {
             Request request
                 = requestBuilder(standalone, "/")
                     .build();
-        
+
             Response response = executeRequest(client, request);
             
             assertThat(response.body().string(), containsString("Hello World"));
+
         } finally {
             standalone.shutdown();
         }
