@@ -2,7 +2,6 @@ package com.jiabangou.ninja.vertx.standalone;
 
 import com.jiabangou.ninja.vertx.standalone.utils.DateParser;
 import io.vertx.core.MultiMap;
-import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
 

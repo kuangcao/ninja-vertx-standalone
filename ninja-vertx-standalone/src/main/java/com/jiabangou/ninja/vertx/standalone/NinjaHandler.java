@@ -2,11 +2,9 @@ package com.jiabangou.ninja.vertx.standalone;
 
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
-import ninja.Bootstrap;
 import ninja.Context;
 import ninja.Ninja;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
