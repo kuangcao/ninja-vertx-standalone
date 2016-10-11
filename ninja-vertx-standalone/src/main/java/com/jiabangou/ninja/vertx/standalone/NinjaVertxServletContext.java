@@ -2,6 +2,7 @@ package com.jiabangou.ninja.vertx.standalone;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.Provides;
 import ninja.bodyparser.BodyParserEngineManager;
 import ninja.params.ParamParsers;
 import ninja.servlet.NinjaServletContext;
@@ -44,7 +45,6 @@ public class NinjaVertxServletContext extends NinjaServletContext {
                 validation,
                 injector,
                 paramParsers);
-
     }
 
     @Override

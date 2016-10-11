@@ -28,10 +28,8 @@ public class NinjaVertx extends AbstractStandalone<NinjaVertx> {
         if (ninjaVertxBootstrap == null) {
             synchronized (this) {
                 if (ninjaVertxBootstrap == null) {
-                    VertxInitializer.setNinjaVertx(this);
-
+                    ninjaProperties.setProperty(KEY_NINJA_PORT, String.valueOf(this.port));
                     ninjaVertxBootstrap = new NinjaVertxBootstrap(ninjaProperties, getContextPath());
-
                 }
             }
         }

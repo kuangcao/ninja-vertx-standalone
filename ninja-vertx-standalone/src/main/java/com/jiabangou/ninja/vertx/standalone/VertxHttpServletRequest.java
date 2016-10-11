@@ -45,7 +45,6 @@ public class VertxHttpServletRequest implements HttpServletRequest {
         this.serverName = uri.getHost();
         this.serverPort = (uri.getPort() != -1) ? uri.getPort() : httpServerRequest.scheme().equals("http") ? 80 : 443;
         this.remoteAddress = httpServerRequest.remoteAddress().toString();
-
     }
 
     @Override

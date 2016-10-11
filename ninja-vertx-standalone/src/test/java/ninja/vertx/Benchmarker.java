@@ -45,12 +45,11 @@ public class Benchmarker {
     static public void main(String[] args) throws Exception {
 
         // spin up standalone, but don't join
-        Standalone standalone = new NinjaVertx()
-//        Standalone standalone = new NinjaJetty()
+//        Standalone standalone = new NinjaVertx()
+        Standalone standalone = new NinjaJetty()
             .externalConfigurationPath("conf/vertx.example.conf")
             .port(StandaloneHelper.findAvailablePort(8000, 9000))
             .start();
-        Thread.sleep(3000);
         final int requests = 100000;
         final int threads = 50;
         
