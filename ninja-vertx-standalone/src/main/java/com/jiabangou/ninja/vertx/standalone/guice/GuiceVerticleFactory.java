@@ -49,11 +49,6 @@ public class GuiceVerticleFactory implements VerticleFactory {
         return bootstrap.getInjector();
     }
 
-    /**
-     *
-     * @param bootstrap
-     * @return
-     */
     public static void setBootstrap(Bootstrap bootstrap) {
         GuiceVerticleFactory.bootstrap = bootstrap;
     }
@@ -63,9 +58,6 @@ public class GuiceVerticleFactory implements VerticleFactory {
         return PREFIX;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Verticle createVerticle(String verticleName, ClassLoader classLoader) throws Exception {
         verticleName = VerticleFactory.removePrefix(verticleName);
@@ -80,10 +72,6 @@ public class GuiceVerticleFactory implements VerticleFactory {
         }
 
         return ctor.newInstance(verticleName, classLoader, getInjector());
-    }
-
-    protected Injector createInjector() {
-        return null;
     }
 
 }

@@ -182,12 +182,6 @@
         </dependency>
         -->
         <dependency>
-            <groupId>org.ninjaframework</groupId>
-            <artifactId>ninja-standalone</artifactId>
-            <version>${ninja.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.jiabangou</groupId>
             <artifactId>ninja-vertx-standalone</artifactId>
             <version>${parent.version}</version>

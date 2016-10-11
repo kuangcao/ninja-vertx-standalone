@@ -43,6 +43,8 @@ public class DateGenerator {
 
     /**
      * Format "EEE, dd-MMM-yyyy HH:mm:ss 'GMT'" for cookies
+     * @param date
+     * @return
      */
     public static String formatCookieDate(long date) {
         StringBuilder buf = new StringBuilder(28);
@@ -55,6 +57,8 @@ public class DateGenerator {
 
     /**
      * Format HTTP date "EEE, dd MMM yyyy HH:mm:ss 'GMT'"
+     * @param date
+     * @return
      */
     public String doFormatDate(long date) {
         buf.setLength(0);
@@ -94,6 +98,8 @@ public class DateGenerator {
 
     /**
      * Format "EEE, dd-MMM-yy HH:mm:ss 'GMT'" for cookies
+     * @param buf
+     * @param date
      */
     public void doFormatCookieDate(StringBuilder buf, long date) {
         gc.setTimeInMillis(date);
