@@ -27,16 +27,17 @@ public class VertxInitializer {
      * The default number of event loop threads to be used  = 2 * number of cores on the machine
      */
     public static final int DEFAULT_WORKER_POOL_SIZE = 2 * Runtime.getRuntime().availableProcessors();
+    public static final String VERTX_IS_WORKER = "vertx.isWorker";
 
     private DeploymentOptions deploymentOptions;
     private Consumer<Vertx> runner;
     private String verticleID;
     private Vertx vertx;
-    private OverlayedNinjaProperties overlayedNinjaProperties;
+    private NinjaProperties ninjaProperties;
 
     @Inject
     public VertxInitializer(NinjaProperties ninjaProperties) {
-        this.overlayedNinjaProperties = new OverlayedNinjaProperties(ninjaProperties);
+        this.ninjaProperties = ninjaProperties;
     }
 
 
@@ -54,8 +55,12 @@ public class VertxInitializer {
         CountDownLatch countDownLatch = new CountDownLatch(1);
         VertxOptions options = new VertxOptions()
                 .setMetricsOptions(new MetricsOptions().setEnabled(true));
-        deploymentOptions = new DeploymentOptions().setWorker(true)
-                .setWorkerPoolName("ninja-vertx").setInstances(DEFAULT_WORKER_POOL_SIZE);
+        deploymentOptions = new DeploymentOptions();
+        if (ninjaProperties.getBooleanWithDefault(VERTX_IS_WORKER, true)) {
+            deploymentOptions.setWorker(true).setWorkerPoolName("ninja-vertx");
+            deploymentOptions.setInstances(
+                    ninjaProperties.getIntegerWithDefault("vertx.workerPoolSize", DEFAULT_WORKER_POOL_SIZE));
+        }
         verticleID = GuiceVerticleFactory.PREFIX + ":" + NinjaVerticle.class.getName();
         Handler<AsyncResult<String>> handler = stringAsyncResult -> {
             countDownLatch.countDown();
