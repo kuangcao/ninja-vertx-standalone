@@ -23,6 +23,8 @@ public class NinjaVerticle extends AbstractVerticle {
     private NinjaHandler ninjaHandler;
     @Inject
     private NinjaProperties ninjaProperties;
+    @Inject
+    private NinjaVertxBootstrap bootstrap;
 
     private int getPort() {
         return ninjaProperties.getInteger(AbstractStandalone.KEY_NINJA_PORT);
@@ -32,6 +34,9 @@ public class NinjaVerticle extends AbstractVerticle {
     @Override
     public void start() throws Exception {
         Router router = Router.router(vertx);
+
+        bootstrap.getInjector().getInstance(VertxRoutes.class).init(router, vertx);
+
         router.route().handler(BodyHandler.create());
         router.route().handler(CookieHandler.create());
         router.route().handler(ninjaHandler);
@@ -43,6 +48,7 @@ public class NinjaVerticle extends AbstractVerticle {
                 log.info("Failed to bind. Thread:" + Thread.currentThread(), res.cause());
             }
         });
+
     }
 
     @Override

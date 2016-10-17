@@ -30,7 +30,13 @@ public class ApplicationController {
         return Results.html();
 
     }
-    
+
+    public Result chat() {
+
+        return Results.html();
+
+    }
+
     public Result helloWorldJson() {
         
         SimplePojo simplePojo = new SimplePojo();

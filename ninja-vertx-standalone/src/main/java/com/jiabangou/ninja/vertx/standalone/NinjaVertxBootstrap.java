@@ -1,10 +1,8 @@
 package com.jiabangou.ninja.vertx.standalone;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Provider;
+import com.google.inject.Singleton;
 import com.jiabangou.ninja.vertx.standalone.guice.GuiceVerticleFactory;
-import io.vertx.ext.web.handler.BodyHandler;
-import io.vertx.ext.web.handler.CookieHandler;
 import ninja.Bootstrap;
 import ninja.Context;
 import ninja.utils.NinjaPropertiesImpl;
@@ -15,6 +13,7 @@ import ninja.utils.NinjaPropertiesImpl;
  */
 public class NinjaVertxBootstrap extends Bootstrap {
 
+    public static final String CONF_CUNSUMER_ROUTES = "conf.VertxRoutes";
 
     private String contextPath;
 
@@ -31,10 +30,35 @@ public class NinjaVertxBootstrap extends Bootstrap {
         GuiceVerticleFactory.setBootstrap(this);
     }
 
+
+    protected void bindCunsumerRoutes() throws Exception {
+
+        String applicationRoutesClassName
+                = resolveApplicationClassName(CONF_CUNSUMER_ROUTES);
+
+        if (doesClassExist(applicationRoutesClassName)) {
+
+            final Class<? extends VertxRoutes> cunsumerRoutes =
+                    (Class<? extends VertxRoutes>) Class.forName(applicationRoutesClassName);
+
+            VertxRoutes routes = cunsumerRoutes
+                    .getConstructor().newInstance();
+
+            addModule(new AbstractModule() {
+                @Override
+                protected void configure() {
+                    bind(VertxRoutes.class).to(cunsumerRoutes).in(Singleton.class);
+                }
+            });
+
+        }
+
+    }
+
     @Override
     protected void configure() throws Exception {
         super.configure();
-
+        bindCunsumerRoutes();
         // Context for servlet requests
         addModule(new AbstractModule() {
             @Override
