@@ -19,9 +19,7 @@ public class VertxRoutes implements com.jiabangou.ninja.vertx.standalone.VertxRo
         // Allow events for the designated addresses in/out of the event bus bridge
         BridgeOptions opts = new BridgeOptions()
                 .addInboundPermitted(new PermittedOptions().setAddress("chat.to.server"))
-                .addOutboundPermitted(new PermittedOptions().setAddress("chat.to.client"))
-                .addInboundPermitted(new PermittedOptions().setAddressRegex("disk_change/\\d+"))
-                .addOutboundPermitted(new PermittedOptions().setAddressRegex("disk_change/\\d+"));
+                .addOutboundPermitted(new PermittedOptions().setAddress("chat.to.client"));
 
         // Create the event bus bridge and add it to the router.
         SockJSHandler ebHandler = SockJSHandler.create(vertx).bridge(opts);
@@ -31,6 +29,7 @@ public class VertxRoutes implements com.jiabangou.ninja.vertx.standalone.VertxRo
             // Create a timestamp string
             String timestamp = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM)
                     .format(Date.from(Instant.now()));
+            System.out.println(timestamp);
             // Send the message back out to all clients with the timestamp prepended.
             eb.publish("chat.to.client", timestamp + ": " + message.body());
         });
