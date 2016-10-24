@@ -1,44 +1,77 @@
-<#import "../layout/defaultLayout.ftl.html" as layout> 
-<@layout.myLayout "Home page">
-<style>
-    .inset {
-        box-shadow: inset 0 0 4px #000000;
-        -moz-box-shadow: inset 0 0 4px #000000;
-        -webkit-box-shadow: inset 0 0 4px #000000;
-        width: 400px;
-        border-width: 4px;
-        padding: 5px;
-    }
+<#import "../layout/defaultLayout.ftl.html" as layout>
+    <@layout.myLayout "Home page">
+    <style>
+        .inset {
+            box-shadow: inset 0 0 4px #000000;
+            -moz-box-shadow: inset 0 0 4px #000000;
+            -webkit-box-shadow: inset 0 0 4px #000000;
+            width: 400px;
+            border-width: 4px;
+            padding: 5px;
+        }
 
-    input.inset {
-        height: 40px;
-    }
+        input.inset {
+            height: 40px;
+        }
 
-    div.inset {
-        height: 500px;
-        white-space: pre-wrap
-    }
-</style>
+        div.inset {
+            height: 500px;
+            margin-top: 60px;
+            white-space: pre-wrap
+        }
+    </style>
 
-<script>
-    var eb = new EventBus("/eventbus/");
-    eb.onopen = function () {
-        eb.registerHandler("chat.to.client", function (err, msg) {
-            $('#chat').append(msg.body + "\n");
-        });
-    };
+    <script>
+//        var sockjs = SockJSUtility.connect({
+//            host:'/eventbus/',
+//            need_reconnect:true,
+//            reconnection_delay:500,
+//            max_reconnection_attempts:20
+//        });
+//        console.log(sockjs);
 
-    function send(event) {
-        if (event.keyCode == 13 || event.which == 13) {
-            var message = $('#input').val();
-            if (message.length > 0) {
-                console.info(eb.state);
-                eb.publish("chat.to.server", message);
-                $('#input').val("");
+//        sockjs.send('chat.to.client',JSON.stringify({
+//            type: 'register',
+//            address: 'chat.to.client'
+//           // headers: mergeHeaders(this.defaultHeaders, {})
+//        }));
+       // sockjs.send('chat.to.client','aaa');
+
+//
+//        sockjs.on('chat.to.client' , function (data) {
+//            console.log(data);
+//        });
+
+
+//        alert(sockjs);
+    //    console.log(sockjs);
+        var eb = new EventBus("/eventbus/");
+        eb.onopen = function () {
+            eb.registerHandler("chat.to.client", function (err, msg) {
+                $('#chat').append(msg.body + "\n");
+            });
+        };
+        //网络断开检查不到 要采用心跳策略
+        eb.onclose = function(){
+            alert('close');
+        }
+        function send(event) {
+            if (event.keyCode == 13 || event.which == 13) {
+                var message = $('#input').val();
+                if (message.length > 0) {
+                    console.info("#"+eb.state);
+                    eb.publish("chat.to.server", message);
+//                    sockjs.send('chat.to.client',JSON.stringify({
+//                        type: 'register',
+//                        address: 'chat.to.client',
+//                        headers: mergeHeaders(this.defaultHeaders, {})
+//                    }));
+                    $('#input').val("");
+                }
             }
         }
-    }
-</script>
+
+    </script>
     <div id="chat" class="inset"></div>
     <input id="input" type="text" onkeydown="send(event)" class="inset">
 </@layout.myLayout>

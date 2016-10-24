@@ -2,10 +2,14 @@ package com.jiabangou.ninja.vertx.standalone;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
+import com.google.inject.multibindings.Multibinder;
 import com.jiabangou.ninja.vertx.standalone.guice.GuiceVerticleFactory;
+import com.jiabangou.ninja.vertx.standalone.utils.PackageScan;
 import ninja.Bootstrap;
 import ninja.Context;
 import ninja.utils.NinjaPropertiesImpl;
+
+import java.util.List;
 
 /**
  * NinjaVertxBootstrap
@@ -13,7 +17,7 @@ import ninja.utils.NinjaPropertiesImpl;
  */
 public class NinjaVertxBootstrap extends Bootstrap {
 
-    public static final String CONF_CUNSUMER_ROUTES = "conf.VertxRoutes";
+    public static final String CONF_CUNSUMER_ROUTES = "vertx.routes";
 
     private String contextPath;
 
@@ -33,27 +37,20 @@ public class NinjaVertxBootstrap extends Bootstrap {
 
     protected void bindCunsumerRoutes() throws Exception {
 
-        String applicationRoutesClassName
-                = resolveApplicationClassName(CONF_CUNSUMER_ROUTES);
-
-        if (doesClassExist(applicationRoutesClassName)) {
-
-            final Class<? extends VertxRoutes> cunsumerRoutes =
-                    (Class<? extends VertxRoutes>) Class.forName(applicationRoutesClassName);
-
-            VertxRoutes routes = cunsumerRoutes
-                    .getConstructor().newInstance();
-
-            addModule(new AbstractModule() {
-                @Override
-                protected void configure() {
-                    bind(VertxRoutes.class).to(cunsumerRoutes).in(Singleton.class);
-                }
-            });
-
-        }
+        final List<Class<?>> classes = PackageScan.getClassList(CONF_CUNSUMER_ROUTES, false);
+        addModule(new AbstractModule() {
+            @Override
+            protected void configure() {
+                Multibinder<VertxRoutes> multibinder = Multibinder.newSetBinder(binder(), VertxRoutes.class);
+                classes.forEach(aClass ->
+                    multibinder.addBinding().to((Class<VertxRoutes>) aClass).in(Singleton.class)
+                );
+            }
+        });
 
     }
+
+
 
     @Override
     protected void configure() throws Exception {

@@ -26,7 +26,7 @@
     <display-name>ninja</display-name>
 
 	<listener>
-		<listener-class>ninja.servlet.NinjaServletListener</listener-class>
+		<listener-class>com.jiabangou.ninja.vertx.standalone.NinjaVertxServletListener</listener-class>
 	</listener>
 
 	<filter>

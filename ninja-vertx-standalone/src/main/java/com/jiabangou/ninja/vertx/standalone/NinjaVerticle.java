@@ -11,6 +11,8 @@ import ninja.utils.NinjaProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Set;
+
 /**
  * Ninja Verticale
  * Created by freeway on 16/8/17.
@@ -26,6 +28,9 @@ public class NinjaVerticle extends AbstractVerticle {
     @Inject
     private NinjaVertxBootstrap bootstrap;
 
+    @Inject
+    private Set<VertxRoutes> vertxRoutes;
+
     private int getPort() {
         return ninjaProperties.getInteger(AbstractStandalone.KEY_NINJA_PORT);
     }
@@ -34,9 +39,9 @@ public class NinjaVerticle extends AbstractVerticle {
     @Override
     public void start() throws Exception {
         Router router = Router.router(vertx);
-
-        bootstrap.getInjector().getInstance(VertxRoutes.class).init(router, vertx);
-
+        vertxRoutes.forEach(vertRouter->{
+            vertRouter.init(router,vertx);
+        });
         router.route().handler(BodyHandler.create());
         router.route().handler(CookieHandler.create());
         router.route().handler(ninjaHandler);

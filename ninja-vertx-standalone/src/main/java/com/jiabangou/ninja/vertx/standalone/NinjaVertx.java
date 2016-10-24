@@ -18,7 +18,7 @@ public class NinjaVertx extends AbstractStandalone<NinjaVertx> {
     public static void main(String[] args) {
         // create new instance and run it
         new NinjaVertx().run();
-    }
+}
 
     @Override
     protected void doConfigure() throws Exception {
