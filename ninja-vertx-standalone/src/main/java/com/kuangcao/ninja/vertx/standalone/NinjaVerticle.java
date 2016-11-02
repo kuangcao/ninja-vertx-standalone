@@ -34,7 +34,6 @@ public class NinjaVerticle extends AbstractVerticle {
     @Inject
     private Provider<Jedis> provider;
 
-
     private int getPort() {
         return ninjaProperties.getInteger(AbstractStandalone.KEY_NINJA_PORT);
     }
@@ -44,8 +43,11 @@ public class NinjaVerticle extends AbstractVerticle {
     @Override
     public void start() throws Exception {
         Router router = Router.router(vertx);
-        VertxEventbus vertxEventbus = VertxEventbus.build(router,vertx,eventbusMap,provider);
-        bootstrap.getInjector().getInstance(VertxRoutes.class).init(vertxEventbus);
+
+
+        IVertxError vertxError = bootstrap.getInjector().getInstance(IVertxError.class);
+        VertxEventbus vertxEventbus = VertxEventbus.build(router,vertx,eventbusMap,provider,vertxError);
+        bootstrap.getInjector().getInstance(IVertxRoutes.class).init(vertxEventbus);
 
         router.route().handler(BodyHandler.create());
         router.route().handler(CookieHandler.create());

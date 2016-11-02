@@ -30,10 +30,13 @@ class ServerInfoStore {
 
     handleVertxReady(eventBus)
     {
+        let this_ = this;
+     //   this.setState({serverTime: message.systemTime});
         eventBus.registerHandler(
             BusRoutes.server_info,
             function(error,message){
-                console.log(message);
+                console.log( message.body);
+                this_.setState({serverTime: message.body.result.name});
             }
         );
     }

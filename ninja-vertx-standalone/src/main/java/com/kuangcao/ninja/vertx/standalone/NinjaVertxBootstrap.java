@@ -18,6 +18,7 @@ import java.util.List;
 public class NinjaVertxBootstrap extends Bootstrap {
 
     public static final String CONF_CUNSUMER_ROUTES = "conf.VertxRoutes";
+    public static final String CONF_CUNSUMER_ERROR = "conf.VertxError";
 
     public static final String CONF_CUNSUMER_EVENTBUS = "eventbus";
 
@@ -38,29 +39,37 @@ public class NinjaVertxBootstrap extends Bootstrap {
 
 
     protected void bindCunsumerRoutes() throws Exception {
+        String errorClassName
+                = resolveApplicationClassName(CONF_CUNSUMER_ERROR);
+
+        if (doesClassExist(errorClassName)) {
+            final Class<? extends IVertxError> cunsumerError = (Class<? extends IVertxError>) Class.forName(errorClassName);
+            cunsumerError.getConstructor().newInstance();
+            addModule(new AbstractModule() {
+                @Override
+                protected void configure() {
+                    bind(IVertxError.class).to(cunsumerError).in(Singleton.class);
+                }
+            });
+        }
 
         String applicationRoutesClassName
                 = resolveApplicationClassName(CONF_CUNSUMER_ROUTES);
 
-
-        final Class<? extends VertxRoutes> cunsumerRoutes =
-                (Class<? extends VertxRoutes>) Class.forName(applicationRoutesClassName);
-
+        final Class<? extends IVertxRoutes> cunsumerRoutes =
+                (Class<? extends IVertxRoutes>) Class.forName(applicationRoutesClassName);
         cunsumerRoutes.getConstructor().newInstance();
-
 
         final List<Class<?>> classes = PackageScan.getClassList(CONF_CUNSUMER_EVENTBUS, false);
         addModule(new AbstractModule() {
             @Override
             protected void configure() {
-                MapBinder<Class, Object> mapBinder
-                        = MapBinder.newMapBinder(binder(), Class.class, Object.class);
+                MapBinder<Class, Object> mapBinder = MapBinder.newMapBinder(binder(), Class.class, Object.class);
 
                 classes.forEach(aClass ->
                         mapBinder.addBinding(aClass).to(aClass)
                 );
-
-                bind(VertxRoutes.class).to(cunsumerRoutes).in(Singleton.class);
+                bind(IVertxRoutes.class).to(cunsumerRoutes).in(Singleton.class);
             }
         });
 
