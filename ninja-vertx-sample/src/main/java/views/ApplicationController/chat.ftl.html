@@ -25,7 +25,8 @@
         var eb = new EventBus("/chatroom/");
         eb.onopen = function () {
             eb.registerHandler("chat.to.client", function (err, msg) {
-                $('#chat').append(msg.body + "\n");
+                console.log(msg.body);
+                $('#chat').append(msg.body.result + "\n");
             });
         };
 
