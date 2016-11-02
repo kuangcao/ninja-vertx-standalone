@@ -64,6 +64,10 @@ local.properties
 # Eclipse Core
 .project
 
+# Dependency directory
+# https://docs.npmjs.com/misc/faq#should-i-check-my-node-modules-folder-into-git
+node_modules
+
 ### Maven ###
 **/target/
 pom.xml.tag

@@ -18,15 +18,24 @@ package conf;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
+import com.kuangcao.ninja.vertx.standalone.NinjaVertx;
+import ninja.utils.NinjaProperties;
 
 @Singleton
 public class Module extends AbstractModule {
-    
 
-    protected void configure() {
-        
-        // bind your injections here!
-        
+    private final NinjaProperties ninjaProperties;
+
+    public Module(NinjaProperties ninjaProperties) {
+        this.ninjaProperties = ninjaProperties;
     }
 
+
+    protected void configure() {
+        install(new RedisModule(ninjaProperties));
+    }
+
+    public static void main(String[] args) {
+        new NinjaVertx().run();
+    }
 }

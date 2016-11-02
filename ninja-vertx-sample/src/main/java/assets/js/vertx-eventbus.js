@@ -90,7 +90,6 @@
         // dev tools are disabled so we cannot use console on IE
       }
     };
-
     var sendPing = function () {
       self.sockJSConn.send(JSON.stringify({type: 'ping'}));
     };
@@ -112,7 +111,7 @@
 
     this.sockJSConn.onmessage = function (e) {
       var json = JSON.parse(e.data);
-
+      console.log(json);
       // define a reply function on the message itself
       if (json.replyAddress) {
         Object.defineProperty(json, 'reply', {

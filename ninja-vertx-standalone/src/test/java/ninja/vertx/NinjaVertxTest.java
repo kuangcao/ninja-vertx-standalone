@@ -16,7 +16,7 @@
 package ninja.vertx;
 
 import com.google.inject.CreationException;
-import com.jiabangou.ninja.vertx.standalone.NinjaVertx;
+import com.kuangcao.ninja.vertx.standalone.NinjaVertx;
 import ninja.standalone.Standalone;
 import ninja.standalone.StandaloneHelper;
 import ninja.utils.NinjaConstant;

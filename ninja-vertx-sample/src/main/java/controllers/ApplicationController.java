@@ -16,14 +16,24 @@
 
 package controllers;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.Singleton;
+import io.vertx.core.json.JsonObject;
 import ninja.Result;
 import ninja.Results;
+import redis.clients.jedis.Jedis;
 
-import com.google.inject.Singleton;
+import java.text.DateFormat;
+import java.time.Instant;
+import java.util.Date;
 
 
 @Singleton
 public class ApplicationController {
+
+    @Inject
+    private Provider<Jedis> provider;
 
     public Result index() {
 
@@ -37,8 +47,17 @@ public class ApplicationController {
 
     }
 
+    public static void main(String[] args) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.put("systemTime",1);
+        System.out.println(jsonObject.toString());
+    }
     public Result helloWorldJson() {
-        
+        String timestamp = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(Date.from(Instant.now()));
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.put("systemTime",timestamp);
+
+        provider.get().publish("com.example:cmd:poke-server",jsonObject.toString());
         SimplePojo simplePojo = new SimplePojo();
         simplePojo.content = "Hello World! Hello Json!";
 

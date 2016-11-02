@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>ninja-vertx</artifactId>
-        <groupId>com.jiabangou</groupId>
+        <groupId>com.kuangcao</groupId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
@@ -129,7 +129,7 @@
                                         implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.jiabangou.ninja.vertx.standalone.NinjaVertx</mainClass>
+                                    <mainClass>com.kuangcao.ninja.vertx.standalone.NinjaVertx</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
@@ -171,6 +171,12 @@
             <artifactId>h2</artifactId>
             <version>1.4.186</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-core</artifactId>
+            <version>${vertx.version}</version>
+        </dependency>
         <!-- If you want to deploy to a war please -->
         <!-- comment ninja-standalone dependency and  -->
         <!-- uncomment the dependency for ninja-servlet -->
@@ -182,7 +188,7 @@
         </dependency>
         -->
         <dependency>
-            <groupId>com.jiabangou</groupId>
+            <groupId>com.kuangcao</groupId>
             <artifactId>ninja-vertx-standalone</artifactId>
             <version>${parent.version}</version>
         </dependency>
@@ -196,11 +202,7 @@
             <artifactId>vertx-redis-client</artifactId>
             <version>3.3.3</version>
         </dependency>
-        <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-            <version>2.9.0</version>
-        </dependency>
+
         <dependency>
             <groupId>org.ninjaframework</groupId>
             <artifactId>ninja-test-utilities</artifactId>

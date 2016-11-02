@@ -15,7 +15,7 @@
  */
 package ninja.vertx;
 
-import com.jiabangou.ninja.vertx.standalone.NinjaVertx;
+import com.kuangcao.ninja.vertx.standalone.NinjaVertx;
 import ninja.standalone.StandaloneHelper;
 import ninja.utils.NinjaMode;
 import okhttp3.*;

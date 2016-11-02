@@ -23,8 +23,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.jiabangou.ninja.vertx.standalone.NinjaVertx;
-import ninja.standalone.NinjaJetty;
+import com.kuangcao.ninja.vertx.standalone.NinjaVertx;
 import ninja.standalone.Standalone;
 import ninja.standalone.StandaloneHelper;
 import static ninja.vertx.NinjaOkHttp3Tester.executeRequest;
