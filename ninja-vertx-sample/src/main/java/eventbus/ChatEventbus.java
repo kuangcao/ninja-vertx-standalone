@@ -9,9 +9,9 @@ import com.kuangcao.ninja.vertx.standalone.model.Result;
 public class ChatEventbus {
 
     @Permitted(inBound = "chat.to.server", outBound = "chat.to.client")
-    public Result say(String message){
+    public String say(String message){
 
-        return Result.build(message);
+        return message;
     }
 
 }

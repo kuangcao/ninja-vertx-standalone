@@ -29,6 +29,7 @@ public class Routes implements ApplicationRoutes {
         
         router.GET().route("/").with(ApplicationController.class, "index");
         router.GET().route("/chat").with(ApplicationController.class, "chat");
+        router.GET().route("/chat2").with(ApplicationController.class, "chat2");
         router.GET().route("/hello_world.json").with(ApplicationController.class, "helloWorldJson");
         
         ///////////////////////////////////////////////////////////////////////

@@ -33,6 +33,6 @@ public class RedisModule extends AbstractModule {
         config.setTestOnBorrow(false);
         JedisPool pool = new JedisPool(config,host,port,15000);
 
-        bind(Jedis.class).toProvider(() -> pool.getResource());
+        bind(Jedis.class).toProvider(pool::getResource);
     }
 }

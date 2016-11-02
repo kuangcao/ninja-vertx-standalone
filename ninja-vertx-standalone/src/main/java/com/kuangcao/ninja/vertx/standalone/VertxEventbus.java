@@ -82,7 +82,7 @@ public class VertxEventbus {
                     }
 
                     eb.consumer(eventbus.getInBound()).handler(msg ->
-                            provider.get().publish(eventbus.getInBound(), String.valueOf(msg.body()))
+                            provider.get().publish(msg.address(), String.valueOf(msg.body()))
                     );
                     new Thread(() -> provider.get().subscribe(new JedisPubSub() {
                         @Override
@@ -98,7 +98,7 @@ public class VertxEventbus {
                                     //     JsonObject jsonObject = returnObj == null? new JsonObject():toVertxJson((JSONObject)returnObj);
 //                                    if(null != returnObj){
 //                                    }
-                                    eb.publish(eventbus.getOutBound(), toVertxJson(returnObj));
+                                    eb.publish(channel, toVertxJson(returnObj));
                                 }
                             } catch (Exception e) {
                                 if(null != iVertxError){

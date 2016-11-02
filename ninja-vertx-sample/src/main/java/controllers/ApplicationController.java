@@ -47,6 +47,10 @@ public class ApplicationController {
 
     }
 
+    public Result chat2() {
+        return Results.html();
+    }
+
     public static void main(String[] args) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.put("systemTime",1);
