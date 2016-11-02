@@ -8,6 +8,7 @@ import com.kuangcao.ninja.vertx.standalone.model.EventbusVo;
 import com.kuangcao.ninja.vertx.standalone.model.Result;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.handler.sockjs.BridgeOptions;
 import io.vertx.ext.web.handler.sockjs.PermittedOptions;
@@ -34,7 +35,7 @@ public class VertxEventbus {
 
     private IVertxError iVertxError;
 
-    public VertxEventbus(io.vertx.ext.web.Router router, Vertx vertx, Map<Class, Object> eventbusMap, Provider<Jedis> provider,IVertxError iVertxError) {
+    public VertxEventbus(io.vertx.ext.web.Router router, Vertx vertx, Map<Class, Object> eventbusMap, Provider<Jedis> provider, IVertxError iVertxError) {
         this.router = router;
         this.vertx = vertx;
         this.eventbusMap = eventbusMap;
@@ -42,8 +43,8 @@ public class VertxEventbus {
         this.iVertxError = iVertxError;
     }
 
-    public static VertxEventbus build(io.vertx.ext.web.Router router, Vertx vertx, Map<Class, Object> eventbusMap, Provider<Jedis> provider,IVertxError iVertxError) {
-        return new VertxEventbus(router, vertx, eventbusMap, provider,iVertxError);
+    public static VertxEventbus build(io.vertx.ext.web.Router router, Vertx vertx, Map<Class, Object> eventbusMap, Provider<Jedis> provider, IVertxError iVertxError) {
+        return new VertxEventbus(router, vertx, eventbusMap, provider, iVertxError);
     }
 
     public VRouter route(String path) {
@@ -70,7 +71,6 @@ public class VertxEventbus {
             }
             List<EventbusVo> eventbusVos = this.findMethod(object);
             if (null != eventbusVos && !eventbusVos.isEmpty()) {
-
                 EventBus eb = vertx.eventBus();
                 for (EventbusVo eventbus : eventbusVos) {
                     if (Strings.isNullOrEmpty(eventbus.getInBound())) {
@@ -81,31 +81,33 @@ public class VertxEventbus {
                         opts.addOutboundPermitted(new PermittedOptions().setAddressRegex(eventbus.getOutBound()));
                     }
 
-                    eb.consumer(eventbus.getInBound()).handler(msg ->
-                            provider.get().publish(msg.address(), String.valueOf(msg.body()))
-                    );
+                    eb.consumer(eventbus.getInBound()).handler(msg -> {
+                        Object returnObj = null;
+                        try {
+                            if (eventbus.getParameterTypes().length > 0) {
+                                returnObj = eventbus.getMethod().invoke(object, msg.body());
+                            } else {
+                                returnObj = eventbus.getMethod().invoke(object);
+                            }
+                            if (!Strings.isNullOrEmpty(eventbus.getOutBound())) {
+                                if (returnObj instanceof String) {
+                                    provider.get().publish(msg.address(), (String)returnObj);
+                                } else {
+                                    provider.get().publish(msg.address(), Json.encode(returnObj));
+                                }
+                            }
+                        } catch (Exception e) {
+                            if (null != iVertxError) {
+                                provider.get().publish(msg.address(), Json.encode(iVertxError.errorExcute(e)));
+                            }
+                            e.printStackTrace();
+                        }
+                    });
+//                    Jedis jedis = new Jedis("localhost");
                     new Thread(() -> provider.get().subscribe(new JedisPubSub() {
                         @Override
                         public void onMessage(String channel, String message) {
-                            Object returnObj = null;
-                            try {
-                                if (eventbus.getParameterTypes().length > 0) {
-                                    returnObj = eventbus.getMethod().invoke(object, message);
-                                } else {
-                                    returnObj = eventbus.getMethod().invoke(object);
-                                }
-                                if (!Strings.isNullOrEmpty(eventbus.getOutBound())) {
-                                    //     JsonObject jsonObject = returnObj == null? new JsonObject():toVertxJson((JSONObject)returnObj);
-//                                    if(null != returnObj){
-//                                    }
-                                    eb.publish(channel, toVertxJson(returnObj));
-                                }
-                            } catch (Exception e) {
-                                if(null != iVertxError){
-                                    eb.publish(eventbus.getOutBound(), new JsonObject(iVertxError.errorExcute(e)));
-                                }
-                                e.printStackTrace();
-                            }
+                            eb.publish(channel.replace("to.server", "to.client"), message);
                         }
                     }, eventbus.getInBound())).start();
                 }
@@ -119,11 +121,11 @@ public class VertxEventbus {
 
         private JsonObject toVertxJson(Object object) {
             JsonObject vertxJson = new JsonObject();
-            if(null == object){
+            if (null == object) {
                 return vertxJson;
             }
-            Result result = (Result)object;
-            JSONObject jsonObject  = JSONObject.parseObject(JSONObject.toJSONString(result));
+            Result result = (Result) object;
+            JSONObject jsonObject = JSONObject.parseObject(JSONObject.toJSONString(result));
 
             Set<Map.Entry<String, Object>> set = jsonObject.entrySet();
             set.forEach(s ->
