@@ -1,6 +1,6 @@
 package conf;
 
-import com.kuangcao.ninja.vertx.standalone.IVertxError;
+import com.jiabangou.ninja.vertx.standalone.IVertxError;
 
 import java.util.HashMap;
 import java.util.Map;

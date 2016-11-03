@@ -1,9 +1,8 @@
 package conf;
 
-import com.kuangcao.ninja.vertx.standalone.IVertxRoutes;
-import com.kuangcao.ninja.vertx.standalone.VertxEventbus;
+import com.jiabangou.ninja.vertx.standalone.IVertxRoutes;
+import com.jiabangou.ninja.vertx.standalone.VertxEventbus;
 import eventbus.Chat2Eventbus;
-import eventbus.ChatEventbus;
 import eventbus.TestEventbus;
 
 /**
@@ -12,9 +11,9 @@ import eventbus.TestEventbus;
 public class VertxRoutes implements IVertxRoutes {
     @Override
     public void init(VertxEventbus eventbus) {
-        eventbus.route("/chatroom/*").with(ChatEventbus.class);
-        eventbus.route("/eventbus/*").with(TestEventbus.class);
         eventbus.route("/chatroom2/*").with(Chat2Eventbus.class);
+//        eventbus.route("/chatroom/*").with(ChatEventbus.class);
+        eventbus.route("/eventbus/*").with(TestEventbus.class);
     }
 
 }

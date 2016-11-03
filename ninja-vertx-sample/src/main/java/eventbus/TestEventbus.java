@@ -1,7 +1,7 @@
 package eventbus;
 
-import com.kuangcao.ninja.vertx.standalone.Permitted;
-import com.kuangcao.ninja.vertx.standalone.model.Result;
+import com.jiabangou.ninja.vertx.standalone.Permitted;
+import com.jiabangou.ninja.vertx.standalone.model.Result;
 
 /**
  * Created by wangziqing on 16/11/1.

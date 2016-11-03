@@ -18,7 +18,7 @@ package conf;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
-import com.kuangcao.ninja.vertx.standalone.NinjaVertx;
+import com.jiabangou.ninja.vertx.standalone.NinjaVertx;
 import ninja.utils.NinjaProperties;
 
 @Singleton

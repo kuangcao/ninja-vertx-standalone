@@ -1,7 +1,6 @@
 package eventbus;
 
-import com.kuangcao.ninja.vertx.standalone.Permitted;
-import com.kuangcao.ninja.vertx.standalone.model.Result;
+import com.jiabangou.ninja.vertx.standalone.Permitted;
 
 import java.text.DateFormat;
 import java.time.Instant;

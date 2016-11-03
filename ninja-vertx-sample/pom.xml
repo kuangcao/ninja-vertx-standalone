@@ -129,7 +129,7 @@
                                         implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.kuangcao.ninja.vertx.standalone.NinjaVertx</mainClass>
+                                    <mainClass>com.jiabangou.ninja.vertx.standalone.NinjaVertx</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
