@@ -24,11 +24,12 @@
     <input id="input" type="text" onkeydown="send(event)" class="inset">
     <div id="chat" class="inset"></div>
     <div id="romeId"></div>
+    <div>此案例展示不同的Chat Room消息彼此隔离, 底层通过订阅不同的Chat Room频道进行隔离</div>
 
 
     <script>
         var roomId = getRandomNum(1, 2);
-        $('#romeId').html("roomid:"+roomId);
+        $('#romeId').html("聊天室id:"+roomId);
         var eb = null;
         initEb();
         function initEb() {
