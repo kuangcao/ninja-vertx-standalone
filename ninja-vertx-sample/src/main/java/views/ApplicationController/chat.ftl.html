@@ -11,12 +11,12 @@
     }
 
     input.inset {
+        margin-top: 60px;
         height: 40px;
     }
 
     div.inset {
-        height: 500px;
-        margin-top: 60px;
+        height: 300px;
         white-space: pre-wrap
     }
 
@@ -35,16 +35,14 @@
                 var message = $('#input').val();
                 if (message.length > 0) {
                     console.info(eb.state);
-                    eb.publish("chat.to.server", message);
+                    eb.send("chat.to.server", message);
                     $('#input').val("");
                 }
             }
         }
     </script>
 
-
-    <div id="chat" class="inset"></div>
     <input id="input" type="text" onkeydown="send(event)" class="inset">
-
+    <div id="chat" class="inset"></div>
 
 </@layout.myLayout>

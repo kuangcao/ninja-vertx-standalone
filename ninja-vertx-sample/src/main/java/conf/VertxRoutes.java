@@ -3,9 +3,9 @@ package conf;
 import com.jiabangou.ninja.vertx.standalone.ApplicationVertxRoutes;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.handler.sockjs.BridgeEventType;
 import io.vertx.ext.web.handler.sockjs.BridgeOptions;
 import io.vertx.ext.web.handler.sockjs.PermittedOptions;
 import io.vertx.ext.web.handler.sockjs.SockJSHandler;
@@ -17,8 +17,6 @@ import redis.clients.jedis.JedisPubSub;
 import java.text.DateFormat;
 import java.time.Instant;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 public class VertxRoutes implements ApplicationVertxRoutes {
 
@@ -30,81 +28,118 @@ public class VertxRoutes implements ApplicationVertxRoutes {
                         .addInboundPermitted(new PermittedOptions().setAddress("chat.to.server"))
                         .addOutboundPermitted(new PermittedOptions().setAddress("chat.to.client"))
                         .addInboundPermitted(new PermittedOptions().setAddress("chat_to_server"))
+                        .addInboundPermitted(new PermittedOptions().setAddressRegex("chat_to_server/\\d+"))
                         .addOutboundPermitted(new PermittedOptions().setAddressRegex("chat_to_client/\\d+"))
         ));
 
-        // local node
-//        eb.consumer("chat.to.server").handler(message -> {
-//            // Create a timestamp string
-//            String timestamp = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM)
-//                    .format(Date.from(Instant.now()));
-//            System.out.print(message);
-//            // Send the message back out to all clients with the timestamp prepended.
-//            eb.publish("chat.to.client", timestamp + ": " + message);
-//        });
+        // local node or event bus
+        initEventBus(router, vertx);
 
-// Jedis for cluster
+    }
 
-        Jedis jedis = new Jedis("localhost");
+    private void initEventBus(Router router, Vertx vertx) {
+
         EventBus eb = vertx.eventBus();
+        // local node
         eb.consumer("chat.to.server").handler(message -> {
             // Create a timestamp string
             String timestamp = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM)
                     .format(Date.from(Instant.now()));
-            jedis.publish("chat.to.client", timestamp + ": " + String.valueOf(message.body()));
+            // Send the message back out to all clients with the timestamp prepended.
+            eb.publish("chat.to.client", timestamp + ": " + message.body());
         });
-        // cunsumer 不支持正则匹配, 所以,发送给server端的channel关于正则的变数保存在header里面, 再通过接收后的逻辑来转
         eb.consumer("chat_to_server").handler(message -> {
-            jedis.publish("chat_to_client" + "/" + message.headers().get("channel"),
+            eb.publish("chat_to_client" + "/" + message.headers().get("channel"),
                     String.valueOf(message.body()));
         });
 
-        Jedis jedisSub = new Jedis("localhost");
+    }
+
+    private void initRedis(Router router, Vertx vertx) {
+
+        EventBus eb = vertx.eventBus();
+        RedisOptions config = new RedisOptions()
+                .setHost("localhost");
+
+        RedisClient redis = RedisClient.create(vertx, config);
+        eb.consumer("chat.to.server").handler(message -> {
+
+            String timestamp = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM)
+                    .format(Date.from(Instant.now()));
+            redis.publish("chat.to.client", timestamp + ": " + String.valueOf(message.body()),
+                    event -> System.out.println("publish count:" + event.result()));
+        });
+
+        eb.consumer("chat_to_server").handler(message -> {
+            redis.publish("chat_to_client" + "/" + message.headers().get("channel"),
+                    String.valueOf(message.body()), null);
+        });
+
+        // 尚未找到断线重连的方法
+        vertx.eventBus().<JsonObject>consumer("io.vertx.redis.*", received -> {
+            JsonObject value = received.body().getJsonObject("value");
+            eb.publish(value.getString("channel"), value.getString("message"));
+        });
+
+        RedisClient redisSub = RedisClient.create(vertx, config);
+        redisSub.psubscribe("*", handler -> {
+            JsonArray jsonArray = handler.result();
+            String message = jsonArray.toString();
+            System.out.println(message);
+        });
+    }
+
+    private void initRedisMix(Router router, Vertx vertx) {
+        EventBus eb = vertx.eventBus();
+        RedisOptions config = new RedisOptions()
+                .setHost("localhost");
+
+        RedisClient redis = RedisClient.create(vertx, config);
+        eb.consumer("chat.to.server").handler(message -> {
+
+            String timestamp = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM)
+                    .format(Date.from(Instant.now()));
+            redis.publish("chat.to.client", timestamp + ": " + String.valueOf(message.body()),
+                    event -> System.out.println("publish count:" + event.result()));
+        });
+
+        eb.consumer("chat_to_server").handler(message -> {
+            redis.publish("chat_to_client" + "/" + message.headers().get("channel"),
+                    String.valueOf(message.body()), null);
+        });
+
+        // 支持短线重连
         new Thread(() -> {
-            jedisSub.psubscribe(new JedisPubSub() {
-                public void onPMessage(String pattern, String channel, String message) {
-                    eb.publish(channel, message);
-                }
+            while (true) {
+                try {
+                    Jedis jedisSub = new Jedis(config.getHost());
+                    jedisSub.psubscribe(new JedisPubSub() {
+                        public void onPMessage(String pattern, String channel, String message) {
+                            eb.publish(channel, message);
+                        }
 
-                public void onPSubscribe(String channel, int subscribedChannels) {
-                    System.out.println(String.format("subscribe redis channel success, channel %s, subscribedChannels %d",
-                            channel, subscribedChannels));
-                }
+                        public void onPSubscribe(String channel, int subscribedChannels) {
+                            System.out.println(String.format("subscribe redis channel success, channel %s, subscribedChannels %d",
+                                    channel, subscribedChannels));
+                        }
 
-                public void onPUnsubscribe(String channel, int subscribedChannels) {
-                    System.out.println(String.format("unsubscribe redis channel, channel %s, subscribedChannels %d",
-                            channel, subscribedChannels));
+                        public void onPUnsubscribe(String channel, int subscribedChannels) {
+                            System.out.println(String.format("unsubscribe redis channel, channel %s, subscribedChannels %d",
+                                    channel, subscribedChannels));
 
+                        }
+                    }, "*");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    try {
+                        Thread.sleep(1000l);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
                 }
-            }, "*");
+            }
 
         }, "vertx-jedis-pubsub").start();
-
-
-        // RedisClient for cluster (订阅不到消息,存在问题, 还没找到原因)
-//        RedisOptions config = new RedisOptions()
-//                .setHost("localhost");
-//
-//        RedisClient redis = RedisClient.create(vertx, config);
-//
-//        eb.consumer("chat.to.server").handler(message -> {
-//            redis.publish("chat.to.client", String.valueOf(message.body()),
-//                    event -> System.out.println("publish count:" + event.result()));
-//        });
-//
-//        RedisClient redisSub = RedisClient.create(vertx, config);
-//        redisSub.subscribe("chat.to.redis", event -> {
-//            JsonArray jsonArray = event.result();
-//            String message = jsonArray.toString();
-//
-//            // Create a timestamp string
-//            String timestamp = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM)
-//                    .format(Date.from(Instant.now()));
-//            System.out.println(message);
-//            // Send the message back out to all clients with the timestamp prepended.
-//            eb.publish("chat.to.client", timestamp + ": " + message);
-//        });
-
 
     }
 

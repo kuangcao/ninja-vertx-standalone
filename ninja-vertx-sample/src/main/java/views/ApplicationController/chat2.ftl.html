@@ -21,14 +21,14 @@
     }
 
 </style>
-    <div id="romeId" style="margin-top: 50px"></div>
     <div id="chat" class="inset"></div>
     <input id="input" type="text" onkeydown="send(event)" class="inset">
+    <div id="romeId"></div>
 
 
     <script>
         var roomId = getRandomNum(1, 2);
-        $('#romeId').html(roomId);
+        $('#romeId').html("roomid:"+roomId);
         var eb = new EventBus("/eventbus/");
         eb.onopen = function () {
             eb.registerHandler("chat_to_client/"+roomId, function (err, msg) {
@@ -55,7 +55,8 @@
                 if (message.length > 0) {
                     console.info(eb.state);
                     var headers = {"channel":roomId};
-                    eb.publish("chat_to_server", message, headers);
+                    eb.send("chat_to_server", message, headers);
+//                    eb.publish("chat_to_server", message, headers);
                     $('#input').val("");
                 }
             }
