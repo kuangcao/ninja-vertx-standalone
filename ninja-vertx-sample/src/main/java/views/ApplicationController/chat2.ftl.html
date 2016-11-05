@@ -29,13 +29,17 @@
     <script>
         var roomId = getRandomNum(1, 2);
         $('#romeId').html("roomid:"+roomId);
-        var eb = new EventBus("/eventbus/");
-        eb.onopen = function () {
-            eb.registerHandler("chat_to_client/"+roomId, function (err, msg) {
-                console.log(msg.body);
-                $('#chat').prepend(msg.body + "\n");
-            });
-        };
+        var eb = null;
+        initEb();
+        function initEb() {
+            eb = new EventBus("/eventbus/");
+            eb.onopen = function () {
+                eb.registerHandler("chat_to_client/"+roomId, function (err, msg) {
+                    console.log(msg.body);
+                    $('#chat').prepend(msg.body + "\n");
+                });
+            };
+        }
 
         /**
          * 获取 min～max之间的一个随机整数
@@ -54,9 +58,11 @@
                 var message = $('#input').val();
                 if (message.length > 0) {
                     console.info(eb.state);
+                    if (eb.state == EventBus.CLOSED) {
+                        initEb();
+                    }
                     var headers = {"channel":roomId};
                     eb.send("chat_to_server", message, headers);
-//                    eb.publish("chat_to_server", message, headers);
                     $('#input').val("");
                 }
             }
