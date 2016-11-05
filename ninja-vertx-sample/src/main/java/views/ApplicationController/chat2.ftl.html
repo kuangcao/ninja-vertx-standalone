@@ -11,18 +11,18 @@
     }
 
     input.inset {
+        margin-top: 60px;
         height: 40px;
     }
 
     div.inset {
-        height: 500px;
-        margin-top: 60px;
+        height: 300px;
         white-space: pre-wrap
     }
 
 </style>
-    <div id="chat" class="inset"></div>
     <input id="input" type="text" onkeydown="send(event)" class="inset">
+    <div id="chat" class="inset"></div>
     <div id="romeId"></div>
 
 
@@ -33,7 +33,7 @@
         eb.onopen = function () {
             eb.registerHandler("chat_to_client/"+roomId, function (err, msg) {
                 console.log(msg.body);
-                $('#chat').append(msg.body + "\n");
+                $('#chat').prepend(msg.body + "\n");
             });
         };
 

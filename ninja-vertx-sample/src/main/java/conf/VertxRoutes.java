@@ -1,6 +1,8 @@
 package conf;
 
 import com.jiabangou.ninja.vertx.standalone.ApplicationVertxRoutes;
+import handlers.Chat2Handler;
+import handlers.ChatHandler;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonArray;
@@ -26,32 +28,25 @@ public class VertxRoutes implements ApplicationVertxRoutes {
         router.route("/eventbus/*").handler(SockJSHandler.create(vertx).bridge(
                 new BridgeOptions()
                         .addInboundPermitted(new PermittedOptions().setAddress("chat.to.server"))
-                        .addOutboundPermitted(new PermittedOptions().setAddress("chat.to.client"))
                         .addInboundPermitted(new PermittedOptions().setAddress("chat_to_server"))
-                        .addInboundPermitted(new PermittedOptions().setAddressRegex("chat_to_server/\\d+"))
-                        .addOutboundPermitted(new PermittedOptions().setAddressRegex("chat_to_client/\\d+"))
+                        .addOutboundPermitted(new PermittedOptions().setAddressRegex(".*"))
         ));
 
-        // local node or event bus
+        // local node or cluster 最佳实践
         initEventBus(router, vertx);
 
     }
 
+    /**
+     * 最佳实践方法
+     * @param router
+     * @param vertx
+     */
     private void initEventBus(Router router, Vertx vertx) {
 
         EventBus eb = vertx.eventBus();
-        // local node
-        eb.consumer("chat.to.server").handler(message -> {
-            // Create a timestamp string
-            String timestamp = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM)
-                    .format(Date.from(Instant.now()));
-            // Send the message back out to all clients with the timestamp prepended.
-            eb.publish("chat.to.client", timestamp + ": " + message.body());
-        });
-        eb.consumer("chat_to_server").handler(message -> {
-            eb.publish("chat_to_client" + "/" + message.headers().get("channel"),
-                    String.valueOf(message.body()));
-        });
+        eb.consumer("chat.to.server").handler(ChatHandler.create(vertx));
+        eb.consumer("chat_to_server").handler(Chat2Handler.create(vertx));
 
     }
 
