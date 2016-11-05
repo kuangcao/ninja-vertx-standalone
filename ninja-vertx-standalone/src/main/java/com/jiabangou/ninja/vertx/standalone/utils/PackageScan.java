@@ -18,7 +18,7 @@ public class PackageScan {
 
     // 获取指定包名下的所有类
     public static List<Class<?>> getClassList(String packageName, boolean isRecursive) {
-        List<Class<?>> classList = new ArrayList();
+        List<Class<?>> classList = new ArrayList<Class<?>>();
         try {
             Enumeration<URL> urls = Thread.currentThread().getContextClassLoader().getResources(packageName.replaceAll("\\.", "/"));
             while (urls.hasMoreElements()) {

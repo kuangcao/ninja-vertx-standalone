@@ -29,11 +29,11 @@
     <script>
         var roomId = getRandomNum(1, 2);
         $('#romeId').html(roomId);
-        var eb = new EventBus("/chatroom2/");
+        var eb = new EventBus("/eventbus/");
         eb.onopen = function () {
-            eb.registerHandler("chat2/to/client/"+roomId, function (err, msg) {
+            eb.registerHandler("chat_to_client/"+roomId, function (err, msg) {
                 console.log(msg.body);
-                $('#chat').append(msg.body.result + "\n");
+                $('#chat').append(msg.body + "\n");
             });
         };
 
@@ -54,7 +54,8 @@
                 var message = $('#input').val();
                 if (message.length > 0) {
                     console.info(eb.state);
-                    eb.publish("chat2/to/server/"+roomId, message);
+                    var headers = {"channel":roomId};
+                    eb.publish("chat_to_server", message, headers);
                     $('#input').val("");
                 }
             }

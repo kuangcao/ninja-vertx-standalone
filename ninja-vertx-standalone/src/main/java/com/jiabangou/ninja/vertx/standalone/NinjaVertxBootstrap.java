@@ -39,39 +39,23 @@ public class NinjaVertxBootstrap extends Bootstrap {
 
 
     protected void bindCunsumerRoutes() throws Exception {
-        String errorClassName
-                = resolveApplicationClassName(CONF_CUNSUMER_ERROR);
-
-        if (doesClassExist(errorClassName)) {
-            final Class<? extends IVertxError> cunsumerError = (Class<? extends IVertxError>) Class.forName(errorClassName);
-            cunsumerError.getConstructor().newInstance();
-            addModule(new AbstractModule() {
-                @Override
-                protected void configure() {
-                    bind(IVertxError.class).to(cunsumerError).in(Singleton.class);
-                }
-            });
-        }
 
         String applicationRoutesClassName
                 = resolveApplicationClassName(CONF_CUNSUMER_ROUTES);
 
-        final Class<? extends IVertxRoutes> cunsumerRoutes =
-                (Class<? extends IVertxRoutes>) Class.forName(applicationRoutesClassName);
-        cunsumerRoutes.getConstructor().newInstance();
+        if (doesClassExist(applicationRoutesClassName)) {
 
-        final List<Class<?>> classes = PackageScan.getClassList(CONF_CUNSUMER_EVENTBUS, false);
-        addModule(new AbstractModule() {
-            @Override
-            protected void configure() {
-                MapBinder<Class, Object> mapBinder = MapBinder.newMapBinder(binder(), Class.class, Object.class);
+            final Class<? extends ApplicationVertxRoutes> cunsumerRoutes =
+                    (Class<? extends ApplicationVertxRoutes>) Class.forName(applicationRoutesClassName);
 
-                classes.forEach(aClass ->
-                        mapBinder.addBinding(aClass).to(aClass)
-                );
-                bind(IVertxRoutes.class).to(cunsumerRoutes).in(Singleton.class);
-            }
-        });
+            addModule(new AbstractModule() {
+                @Override
+                protected void configure() {
+                    bind(ApplicationVertxRoutes.class).to(cunsumerRoutes).in(Singleton.class);
+                }
+            });
+
+        }
 
     }
 

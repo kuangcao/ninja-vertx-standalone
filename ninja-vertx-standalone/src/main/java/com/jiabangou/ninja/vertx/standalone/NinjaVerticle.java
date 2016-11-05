@@ -29,10 +29,6 @@ public class NinjaVerticle extends AbstractVerticle {
     private NinjaProperties ninjaProperties;
     @Inject
     private NinjaVertxBootstrap bootstrap;
-    @Inject
-    private Map<Class, Object> eventbusMap;
-    @Inject
-    private Provider<Jedis> provider;
 
     private int getPort() {
         return ninjaProperties.getInteger(AbstractStandalone.KEY_NINJA_PORT);
@@ -44,10 +40,7 @@ public class NinjaVerticle extends AbstractVerticle {
     public void start() throws Exception {
         Router router = Router.router(vertx);
 
-
-        IVertxError vertxError = bootstrap.getInjector().getInstance(IVertxError.class);
-        VertxEventbus vertxEventbus = VertxEventbus.build(router,vertx,eventbusMap,provider,vertxError);
-        bootstrap.getInjector().getInstance(IVertxRoutes.class).init(vertxEventbus);
+        bootstrap.getInjector().getInstance(ApplicationVertxRoutes.class).init(router, vertx);
 
         router.route().handler(BodyHandler.create());
         router.route().handler(CookieHandler.create());

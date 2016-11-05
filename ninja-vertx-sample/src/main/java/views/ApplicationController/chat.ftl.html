@@ -22,7 +22,7 @@
 
 </style>
     <script>
-        var eb = new EventBus("/chatroom/");
+        var eb = new EventBus("/eventbus/");
         eb.onopen = function () {
             eb.registerHandler("chat.to.client", function (err, msg) {
                 console.log(msg.body);
