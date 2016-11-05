@@ -22,11 +22,19 @@
  */
 package com.jiabangou.ninja.vertx.standalone.guice;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.Singleton;
+import com.jiabangou.ninja.vertx.standalone.ApplicationVertxRoutes;
+import com.jiabangou.ninja.vertx.standalone.NinjaVertxBootstrap;
+import com.jiabangou.ninja.vertx.standalone.utils.PackageScan;
 import io.vertx.core.*;
 import io.vertx.core.impl.verticle.CompilingClassLoader;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+
+import java.util.List;
 
 /**
  * Guice Verticle to lazy load the real verticle with DI

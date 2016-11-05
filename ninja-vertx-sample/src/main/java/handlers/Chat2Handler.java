@@ -11,12 +11,10 @@ import io.vertx.core.eventbus.Message;
 public class Chat2Handler implements Handler<Message<Object>> {
 
     private Vertx vertx;
-    public static Chat2Handler create(Vertx vertx) {
-        return new Chat2Handler(vertx);
-    }
 
-    public Chat2Handler(Vertx vertx) {
+    public Chat2Handler setVertx(Vertx vertx) {
         this.vertx = vertx;
+        return this;
     }
 
     @Override

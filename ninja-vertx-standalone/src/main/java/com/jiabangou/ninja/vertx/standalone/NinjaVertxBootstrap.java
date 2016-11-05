@@ -2,7 +2,6 @@ package com.jiabangou.ninja.vertx.standalone;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
-import com.google.inject.multibindings.MapBinder;
 import com.jiabangou.ninja.vertx.standalone.guice.GuiceVerticleFactory;
 import com.jiabangou.ninja.vertx.standalone.utils.PackageScan;
 import ninja.Bootstrap;
@@ -17,11 +16,8 @@ import java.util.List;
  */
 public class NinjaVertxBootstrap extends Bootstrap {
 
-    public static final String CONF_CUNSUMER_ROUTES = "conf.VertxRoutes";
-    public static final String CONF_CUNSUMER_ERROR = "conf.VertxError";
-
-    public static final String CONF_CUNSUMER_EVENTBUS = "eventbus";
-
+    public static final String CONF_VERTX_ROUTES = "conf.VertxRoutes";
+    public static final String CONF_VERTX_HANDLERS_ROUTES = "handlers";
     private String contextPath;
 
     private final NinjaVertxBootstrap bootstrap;
@@ -37,11 +33,15 @@ public class NinjaVertxBootstrap extends Bootstrap {
         GuiceVerticleFactory.setBootstrap(this);
     }
 
+    public List<Class<?>> resolveVertxHandlers() {
+        return PackageScan.getClasses(
+                resolveApplicationClassName(CONF_VERTX_HANDLERS_ROUTES), true);
+    }
 
     protected void bindCunsumerRoutes() throws Exception {
 
         String applicationRoutesClassName
-                = resolveApplicationClassName(CONF_CUNSUMER_ROUTES);
+                = resolveApplicationClassName(CONF_VERTX_ROUTES);
 
         if (doesClassExist(applicationRoutesClassName)) {
 
@@ -51,6 +51,7 @@ public class NinjaVertxBootstrap extends Bootstrap {
             addModule(new AbstractModule() {
                 @Override
                 protected void configure() {
+                    resolveVertxHandlers().forEach(this::bind);
                     bind(ApplicationVertxRoutes.class).to(cunsumerRoutes).in(Singleton.class);
                 }
             });
@@ -71,7 +72,7 @@ public class NinjaVertxBootstrap extends Bootstrap {
                 bind(Context.class).to(NinjaVertxServletContext.class);
                 bind(VertxInitializer.class).asEagerSingleton();
                 bind(NinjaVertxBootstrap.class).toInstance(bootstrap);
-                bind(NinjaHandler.class).toProvider(NinjaHandler.NinjaHandlerProvider.class);
+                bind(NinjaHandler.class);
             }
 
         });

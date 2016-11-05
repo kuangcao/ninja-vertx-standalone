@@ -1,5 +1,6 @@
 package handlers;
 
+import com.google.inject.Inject;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.Message;
@@ -15,12 +16,10 @@ import java.util.Date;
 public class ChatHandler implements Handler<Message<Object>> {
 
     private Vertx vertx;
-    public static ChatHandler create(Vertx vertx) {
-        return new ChatHandler(vertx);
-    }
 
-    public ChatHandler(Vertx vertx) {
+    public ChatHandler setVertx(Vertx vertx) {
         this.vertx = vertx;
+        return this;
     }
 
     @Override

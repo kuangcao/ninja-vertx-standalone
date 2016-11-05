@@ -11,16 +11,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * 包扫描器
  * Created by wangziqing on 16/10/24.
  */
 public class PackageScan {
 
 
     // 获取指定包名下的所有类
-    public static List<Class<?>> getClassList(String packageName, boolean isRecursive) {
+    public static List<Class<?>> getClasses(String packageName, boolean isRecursive) {
         List<Class<?>> classList = new ArrayList<Class<?>>();
         try {
-            Enumeration<URL> urls = Thread.currentThread().getContextClassLoader().getResources(packageName.replaceAll("\\.", "/"));
+            Enumeration<URL> urls = Thread.currentThread().getContextClassLoader()
+                    .getResources(packageName.replaceAll("\\.", "/"));
             while (urls.hasMoreElements()) {
                 URL url = urls.nextElement();
                 if (url != null) {
@@ -51,7 +53,7 @@ public class PackageScan {
                         if (isRecursive) {
                             String subPackagePath = getSubPackagePath(packagePath, fileName);
                             String subPackageName = getSubPackageName(packageName, fileName);
-                            addClass(classList, subPackagePath, subPackageName, isRecursive);
+                            addClass(classList, subPackagePath, subPackageName, true);
                         }
                     }
                 }

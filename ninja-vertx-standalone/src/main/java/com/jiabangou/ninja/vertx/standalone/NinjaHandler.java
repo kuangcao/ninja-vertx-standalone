@@ -1,7 +1,6 @@
 package com.jiabangou.ninja.vertx.standalone;
 
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 import ninja.Context;
@@ -15,38 +14,14 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class NinjaHandler implements Handler<RoutingContext> {
 
+    @Inject
     private NinjaVertxBootstrap bootstrap;
+
+    @Inject
     private Ninja ninja;
-
-    public void setBootstrap(NinjaVertxBootstrap bootstrap) {
-        this.bootstrap = bootstrap;
-    }
-
-    public void setNinja(Ninja ninja) {
-        this.ninja = ninja;
-    }
-
-    public static class NinjaHandlerProvider implements Provider<NinjaHandler> {
-
-        @Inject
-        private NinjaVertxBootstrap bootstrap;
-        @Inject
-        private Ninja ninja;
-
-        @Override
-        public NinjaHandler get() {
-            NinjaHandler ninjaHandler = new NinjaHandler();
-            ninjaHandler.setBootstrap(bootstrap);
-            ninjaHandler.setNinja(ninja);
-            return ninjaHandler;
-        }
-
-    }
-
 
     @Override
     public void handle(RoutingContext event) {
-
         VertxHttpServletRequest request = new VertxHttpServletRequest(event);
         request.setContextPath(bootstrap.getContextPath());
         HttpServletResponse response = new VertxHttpServletResponse(event);

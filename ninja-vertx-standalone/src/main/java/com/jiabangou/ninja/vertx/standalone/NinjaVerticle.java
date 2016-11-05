@@ -11,9 +11,6 @@ import ninja.standalone.AbstractStandalone;
 import ninja.utils.NinjaProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.Jedis;
-
-import java.util.Map;
 
 /**
  * Ninja Verticale
@@ -24,7 +21,7 @@ public class NinjaVerticle extends AbstractVerticle {
     static final private Logger log = LoggerFactory.getLogger(NinjaVerticle.class);
 
     @Inject
-    private NinjaHandler ninjaHandler;
+    private Provider<NinjaHandler> ninjaHandlerProvider;
     @Inject
     private NinjaProperties ninjaProperties;
     @Inject
@@ -44,7 +41,7 @@ public class NinjaVerticle extends AbstractVerticle {
 
         router.route().handler(BodyHandler.create());
         router.route().handler(CookieHandler.create());
-        router.route().handler(ninjaHandler);
+        router.route().handler(ninjaHandlerProvider.get());
         httpServer = vertx.createHttpServer();
         httpServer.requestHandler(router::accept).listen(getPort(), res -> {
             if (res.succeeded()) {
