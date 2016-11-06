@@ -1,5 +1,6 @@
 package handlers;
 
+import com.google.inject.Inject;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.Message;
@@ -10,12 +11,8 @@ import io.vertx.core.eventbus.Message;
  */
 public class Chat2Handler implements Handler<Message<Object>> {
 
+    @Inject
     private Vertx vertx;
-
-    public Chat2Handler setVertx(Vertx vertx) {
-        this.vertx = vertx;
-        return this;
-    }
 
     @Override
     public void handle(Message<Object> message) {

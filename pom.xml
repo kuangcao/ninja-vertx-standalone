@@ -46,7 +46,7 @@
 
     <properties>
         <vertx.version>3.3.3</vertx.version>
-        <ninja.version>5.7.0</ninja.version>
+        <ninja.version>5.8.0</ninja.version>
     </properties>
 
     <modules>

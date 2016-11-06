@@ -31,8 +31,8 @@ public class VertxRoutes implements ApplicationVertxRoutes {
 
         // for sockjs
         EventBus eb = vertx.eventBus();
-        eb.consumer("chat.to.server").handler(chatHandler.get().setVertx(vertx));
-        eb.consumer("chat_to_server").handler(chat2Handler.get().setVertx(vertx));
+        eb.consumer("chat.to.server").handler(chatHandler.get());
+        eb.consumer("chat_to_server").handler(chat2Handler.get());
 
     }
 

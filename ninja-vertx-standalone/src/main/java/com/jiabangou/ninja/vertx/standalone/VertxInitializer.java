@@ -32,16 +32,52 @@ public class VertxInitializer {
 
 
     private DeploymentOptions deploymentOptions;
+    private VertxOptions options;
     private Consumer<Vertx> runner;
     private String verticleID;
-    private Vertx vertx;
-    private NinjaProperties ninjaProperties;
 
-    @Inject
-    public VertxInitializer(NinjaProperties ninjaProperties) {
-        this.ninjaProperties = ninjaProperties;
+    private Vertx vertx;
+
+    public Vertx getVertx() {
+        return vertx;
     }
 
+    public VertxInitializer(NinjaProperties ninjaProperties) {
+        options = new VertxOptions()
+                .setClustered(ninjaProperties.getBooleanWithDefault(VERTX_IS_CLUSTERED, false));
+
+        if (ninjaProperties.getBooleanWithDefault(VERTX_IS_METRICS_ENABLED, false)) {
+            options.setMetricsOptions(new MetricsOptions().setEnabled(true));
+        }
+
+        deploymentOptions = new DeploymentOptions();
+        if (ninjaProperties.getBooleanWithDefault(VERTX_IS_WORKER, true)) {
+            deploymentOptions.setWorker(true).setWorkerPoolName("ninja-vertx").setInstances(
+                    ninjaProperties.getIntegerWithDefault("vertx.workerPoolSize", DEFAULT_WORKER_POOL_SIZE));
+        }
+        if (options.isClustered()) {
+            CountDownLatch countDownLatch = new CountDownLatch(1);
+            Vertx.clusteredVertx(options, res -> {
+                if (res.succeeded()) {
+                    vertx = res.result();
+                    countDownLatch.countDown();
+                } else {
+                    log.error(res.cause().getMessage(), res.cause());
+                }
+            });
+            await(countDownLatch);
+        } else {
+            vertx = Vertx.vertx(options);
+        }
+    }
+
+    private static VertxInitializer vertxInitializer;
+    public synchronized static VertxInitializer getInstance(NinjaProperties ninjaProperties) {
+        if (vertxInitializer == null) {
+            vertxInitializer = new VertxInitializer(ninjaProperties);
+        }
+        return vertxInitializer;
+    }
 
     private void await(CountDownLatch mCountDownLatch) {
         try {
@@ -55,18 +91,6 @@ public class VertxInitializer {
     public void start() {
 
         CountDownLatch countDownLatch = new CountDownLatch(1);
-        VertxOptions options = new VertxOptions()
-                .setClustered(ninjaProperties.getBooleanWithDefault(VERTX_IS_CLUSTERED, false));
-
-        if (ninjaProperties.getBooleanWithDefault(VERTX_IS_METRICS_ENABLED, false)) {
-            options.setMetricsOptions(new MetricsOptions().setEnabled(true));
-        }
-
-        deploymentOptions = new DeploymentOptions();
-        if (ninjaProperties.getBooleanWithDefault(VERTX_IS_WORKER, true)) {
-            deploymentOptions.setWorker(true).setWorkerPoolName("ninja-vertx").setInstances(
-                    ninjaProperties.getIntegerWithDefault("vertx.workerPoolSize", DEFAULT_WORKER_POOL_SIZE));
-        }
 
         Handler<AsyncResult<String>> handler = stringAsyncResult -> {
             countDownLatch.countDown();
@@ -84,21 +108,8 @@ public class VertxInitializer {
                 log.error(t.getMessage(), t);
             }
         };
-        if (options.isClustered()) {
-            Vertx.clusteredVertx(options, res -> {
-                if (res.succeeded()) {
-                    vertx = res.result();
-                    runner.accept(vertx);
-                } else {
-                    log.error(res.cause().getMessage(), res.cause());
-                }
-            });
-            await(countDownLatch);
-        } else {
-            vertx = Vertx.vertx(options);
-            runner.accept(vertx);
-            await(countDownLatch);
-        }
+        runner.accept(vertx);
+        await(countDownLatch);
     }
 
     @Dispose(order = 5)

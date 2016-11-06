@@ -15,12 +15,8 @@ import java.util.Date;
  */
 public class ChatHandler implements Handler<Message<Object>> {
 
+    @Inject
     private Vertx vertx;
-
-    public ChatHandler setVertx(Vertx vertx) {
-        this.vertx = vertx;
-        return this;
-    }
 
     @Override
     public void handle(Message<Object> message) {
