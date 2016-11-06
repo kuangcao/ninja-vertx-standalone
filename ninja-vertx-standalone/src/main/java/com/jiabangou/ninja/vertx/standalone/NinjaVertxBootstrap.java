@@ -38,21 +38,21 @@ public class NinjaVertxBootstrap extends Bootstrap {
                 resolveApplicationClassName(CONF_VERTX_HANDLERS_ROUTES), true);
     }
 
-    protected void bindCunsumerRoutes() throws Exception {
+    protected void bindVertxRoutes() throws Exception {
 
         String applicationRoutesClassName
                 = resolveApplicationClassName(CONF_VERTX_ROUTES);
 
         if (doesClassExist(applicationRoutesClassName)) {
 
-            final Class<? extends ApplicationVertxRoutes> cunsumerRoutes =
+            final Class<? extends ApplicationVertxRoutes> vertxRoutes =
                     (Class<? extends ApplicationVertxRoutes>) Class.forName(applicationRoutesClassName);
 
             addModule(new AbstractModule() {
                 @Override
                 protected void configure() {
                     resolveVertxHandlers().forEach(this::bind);
-                    bind(ApplicationVertxRoutes.class).to(cunsumerRoutes).in(Singleton.class);
+                    bind(ApplicationVertxRoutes.class).to(vertxRoutes).in(Singleton.class);
                 }
             });
 
@@ -64,7 +64,7 @@ public class NinjaVertxBootstrap extends Bootstrap {
     @Override
     protected void configure() throws Exception {
         super.configure();
-        bindCunsumerRoutes();
+        bindVertxRoutes();
         // Context for servlet requests
         addModule(new AbstractModule() {
             @Override

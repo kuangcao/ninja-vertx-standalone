@@ -68,10 +68,11 @@ public class VertxInitializer {
                     ninjaProperties.getIntegerWithDefault("vertx.workerPoolSize", DEFAULT_WORKER_POOL_SIZE));
         }
 
-        verticleID = GuiceVerticleFactory.PREFIX + ":" + NinjaVerticle.class.getName();
         Handler<AsyncResult<String>> handler = stringAsyncResult -> {
             countDownLatch.countDown();
         };
+
+        verticleID = GuiceVerticleFactory.PREFIX + ":" + NinjaVerticle.class.getName();
         runner = vertex -> {
             try {
                 if (deploymentOptions != null) {

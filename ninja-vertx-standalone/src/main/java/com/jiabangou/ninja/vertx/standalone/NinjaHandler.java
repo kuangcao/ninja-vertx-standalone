@@ -1,6 +1,7 @@
 package com.jiabangou.ninja.vertx.standalone;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 import ninja.Context;
@@ -20,6 +21,9 @@ public class NinjaHandler implements Handler<RoutingContext> {
     @Inject
     private Ninja ninja;
 
+    @Inject
+    private Provider<Context> contextProvider;
+
     @Override
     public void handle(RoutingContext event) {
         VertxHttpServletRequest request = new VertxHttpServletRequest(event);
@@ -27,8 +31,7 @@ public class NinjaHandler implements Handler<RoutingContext> {
         HttpServletResponse response = new VertxHttpServletResponse(event);
 
         // We generate a Ninja compatible context element
-        NinjaVertxServletContext context = (NinjaVertxServletContext) bootstrap
-                .getInjector().getProvider(Context.class).get();
+        NinjaVertxServletContext context = (NinjaVertxServletContext) contextProvider.get();
 
         // And populate it
         context.init(null, request, response);
