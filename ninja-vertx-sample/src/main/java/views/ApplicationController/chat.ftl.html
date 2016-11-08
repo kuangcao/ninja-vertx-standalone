@@ -24,16 +24,25 @@
     <script>
 
         var eb = null;
+        var reconnectId = null;
         initEb();
+        reconnectEb();
 
         function initEb() {
             eb = new EventBus("/eventbus/");
             eb.onopen = function () {
+                if (reconnectId) clearInterval(reconnectId);
                 eb.registerHandler("chat.to.client", function (err, msg) {
                     console.log(msg.body);
                     $('#chat').prepend(msg.body + "\n");
                 });
             };
+        }
+
+        function reconnectEb() {
+            eb.onclose = function () {
+                reconnectId = setInterval(initEb, 5000);
+            }
         }
 
         function send(event) {
@@ -43,6 +52,7 @@
                     console.info(eb.state);
                     if (eb.state == EventBus.CLOSED) {
                         initEb();
+                        reconnectEb();
                     }
                     eb.send("chat.to.server", message);
                     $('#input').val("");
