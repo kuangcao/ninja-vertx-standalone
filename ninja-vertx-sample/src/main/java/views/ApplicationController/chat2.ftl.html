@@ -31,8 +31,13 @@
         var roomId = getRandomNum(1, 2);
         $('#romeId').html("聊天室id:"+roomId);
         var eb = null;
+        var reconnectId = null;
         initEb();
         function initEb() {
+            if (reconnectId) {
+                clearInterval(reconnectId);
+                reconnectId = null;
+            }
             eb = new EventBus("/eventbus/");
             eb.onopen = function () {
                 eb.registerHandler("chat_to_client/"+roomId, function (err, msg) {
@@ -40,6 +45,11 @@
                     $('#chat').prepend(msg.body + "\n");
                 });
             };
+            eb.onclose = function () {
+                if (!reconnectId) {
+                    reconnectId = setInterval(initEb, 5000);
+                }
+            }
         }
 
         /**
