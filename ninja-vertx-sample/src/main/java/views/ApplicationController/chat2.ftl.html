@@ -34,10 +34,6 @@
         var reconnectId = null;
         initEb();
         function initEb() {
-            if (reconnectId) {
-                clearInterval(reconnectId);
-                reconnectId = null;
-            }
             eb = new EventBus("/eventbus/");
             eb.onopen = function () {
                 eb.registerHandler("chat_to_client/"+roomId, function (err, msg) {
@@ -46,9 +42,7 @@
                 });
             };
             eb.onclose = function () {
-                if (!reconnectId) {
-                    reconnectId = setInterval(initEb, 5000);
-                }
+                setTimeout(initEb, 5000);
             }
         }
 
@@ -69,9 +63,6 @@
                 var message = $('#input').val();
                 if (message.length > 0) {
                     console.info(eb.state);
-                    if (eb.state == EventBus.CLOSED) {
-                        initEb();
-                    }
                     var headers = {"channel":roomId};
                     eb.send("chat_to_server", message, headers);
                     $('#input').val("");

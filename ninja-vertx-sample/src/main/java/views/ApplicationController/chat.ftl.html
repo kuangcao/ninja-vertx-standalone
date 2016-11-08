@@ -24,14 +24,9 @@
     <script>
 
         var eb = null;
-        var reconnectId = null;
         initEb();
 
         function initEb() {
-            if (reconnectId) {
-                clearInterval(reconnectId);
-                reconnectId = null;
-            }
             eb = new EventBus("/eventbus/");
             eb.onopen = function () {
                 eb.registerHandler("chat.to.client", function (err, msg) {
@@ -40,9 +35,7 @@
                 });
             };
             eb.onclose = function () {
-                if (!reconnectId) {
-                    reconnectId = setInterval(initEb, 5000);
-                }
+                setTimeout(initEb, 5000);
             }
         }
 
