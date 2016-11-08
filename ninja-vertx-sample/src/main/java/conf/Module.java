@@ -32,7 +32,6 @@ public class Module extends AbstractModule {
 
 
     protected void configure() {
-        install(new RedisModule(ninjaProperties));
     }
 
     public static void main(String[] args) {

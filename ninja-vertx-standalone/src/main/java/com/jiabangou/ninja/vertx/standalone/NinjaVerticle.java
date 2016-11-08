@@ -37,10 +37,11 @@ public class NinjaVerticle extends AbstractVerticle {
     public void start() throws Exception {
         Router router = Router.router(vertx);
 
-        bootstrap.getInjector().getInstance(ApplicationVertxRoutes.class).init(router, vertx);
-
         router.route().handler(BodyHandler.create());
         router.route().handler(CookieHandler.create());
+
+        bootstrap.getInjector().getInstance(ApplicationVertxRoutes.class).init(router, vertx);
+
         router.route().handler(ninjaHandlerProvider.get());
         httpServer = vertx.createHttpServer();
         httpServer.requestHandler(router::accept).listen(getPort(), res -> {

@@ -18,7 +18,7 @@ public class NinjaVertx extends AbstractStandalone<NinjaVertx> {
     public static void main(String[] args) {
         // create new instance and run it
         new NinjaVertx().run();
-}
+    }
 
     @Override
     protected void doConfigure() throws Exception {
@@ -47,7 +47,7 @@ public class NinjaVertx extends AbstractStandalone<NinjaVertx> {
     @Override
     protected void doJoin() throws Exception {
         // vertx doesn't let us join it, so we'll instead wait ourselves
-        synchronized(this) {
+        synchronized (this) {
             this.wait();
         }
     }

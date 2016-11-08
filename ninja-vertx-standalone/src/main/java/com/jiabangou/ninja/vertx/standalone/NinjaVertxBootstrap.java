@@ -76,6 +76,7 @@ public class NinjaVertxBootstrap extends Bootstrap {
                 bind(Context.class).to(NinjaVertxServletContext.class);
                 bind(VertxInitializer.class).toInstance(vertxInitializer);
                 bind(NinjaVertxBootstrap.class).toInstance(bootstrap);
+                bind(NinjaContextBuilder.class);
                 bind(NinjaHandler.class);
             }
         });
