@@ -26,12 +26,14 @@ public class Module extends AbstractModule {
 
     private final NinjaProperties ninjaProperties;
 
+
     public Module(NinjaProperties ninjaProperties) {
         this.ninjaProperties = ninjaProperties;
     }
 
 
     protected void configure() {
+        bind(RedisClientBuilder.class);
     }
 
     public static void main(String[] args) {

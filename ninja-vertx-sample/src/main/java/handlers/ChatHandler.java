@@ -23,7 +23,9 @@ public class ChatHandler implements Handler<Message<Object>> {
         // Create a timestamp string
         String timestamp = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM)
                 .format(Date.from(Instant.now()));
+        String pubMessage = timestamp + ": " + message.body();
+        System.out.println("chat.to.client:" + pubMessage);
         // Send the message back out to all clients with the timestamp prepended.
-        vertx.eventBus().publish("chat.to.client", timestamp + ": " + message.body());
+        vertx.eventBus().publish("chat.to.client", pubMessage);
     }
 }
