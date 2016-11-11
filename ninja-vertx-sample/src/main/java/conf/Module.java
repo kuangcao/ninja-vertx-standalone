@@ -33,7 +33,7 @@ public class Module extends AbstractModule {
 
 
     protected void configure() {
-        bind(RedisClientBuilder.class);
+        bind(PubSub.class);
     }
 
     public static void main(String[] args) {

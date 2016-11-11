@@ -16,8 +16,6 @@ import io.vertx.ext.web.handler.sockjs.PermittedOptions;
 import io.vertx.ext.web.handler.sockjs.SockJSHandler;
 import io.vertx.redis.RedisClient;
 import io.vertx.redis.RedisOptions;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPubSub;
 
 import java.text.DateFormat;
 import java.time.Instant;
@@ -33,7 +31,7 @@ public class VertxRoutes implements ApplicationVertxRoutes {
     @Inject
     private Provider<AuthHandler> authHandler;
     @Inject
-    private RedisClientBuilder redisClientBuilder;
+    private PubSub pubSub;
 
     @Override
     public void init(Router router, Vertx vertx) {
@@ -93,41 +91,19 @@ public class VertxRoutes implements ApplicationVertxRoutes {
 
     private void initRedisMix(Router router, Vertx vertx) {
 
-        RedisClient redis = redisClientBuilder.getInstance();
+        pubSub.startSubscribe();
+
         EventBus eb = vertx.eventBus();
         eb.consumer("chat.to.server").handler(message -> {
             String timestamp = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM)
                     .format(Date.from(Instant.now()));
-            redis.publish("chat.to.client", timestamp + ": " + String.valueOf(message.body()),
-                    event -> System.out.println("publish count:" + event.result()));
+            pubSub.publish("chat.to.client", timestamp + ": " + String.valueOf(message.body()));
         });
 
         eb.consumer("chat_to_server").handler(message -> {
-            redis.publish("chat_to_client" + "/" + message.headers().get("channel"),
-                    String.valueOf(message.body()), null);
+            pubSub.publish("chat_to_client" + "/" + message.headers().get("channel"),
+                    String.valueOf(message.body()));
         });
-
-        // 支持短线重连
-        new Thread(() -> {
-            while (true) {
-                try {
-                    Jedis jedisSub = redisClientBuilder.createJedis();
-                    jedisSub.psubscribe(new JedisPubSub() {
-                        public void onPMessage(String pattern, String channel, String message) {
-                            eb.publish(channel, message);
-                        }
-                    }, "*");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    try {
-                        Thread.sleep(1000l);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
-                }
-            }
-
-        }, "vertx-jedis-pubsub").start();
     }
 
 }
