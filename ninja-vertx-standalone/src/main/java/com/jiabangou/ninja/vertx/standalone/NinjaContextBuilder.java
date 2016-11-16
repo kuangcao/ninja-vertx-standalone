@@ -40,7 +40,7 @@ public class NinjaContextBuilder {
     public Map<String,String> getCookie(RoutingContext event,String prefix,String secret){
         Map<String,String> cookieMap = Maps.newHashMap();
         if(StringUtils.isNotBlank(prefix) && StringUtils.isNotBlank(secret)){
-            Cookie cookie = event.getCookie(prefix+"__SESSION");
+            Cookie cookie = event.getCookie(prefix+"_SESSION");
             if(null != cookie) {
                 String params = new CookieEncryption(secret).decrypt(cookie.getValue());
                 cookieMap = paramsToMap(params);
