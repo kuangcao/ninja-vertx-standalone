@@ -18,5 +18,6 @@ public class Chat2Handler implements Handler<Message<Object>> {
     public void handle(Message<Object> message) {
         vertx.eventBus().publish("chat_to_client" + "/" + message.headers().get("channel"),
                 String.valueOf(message.body()));
+
     }
 }
