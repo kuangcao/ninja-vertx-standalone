@@ -3,9 +3,9 @@ package conf;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.jiabangou.ninja.vertx.standalone.ApplicationVertxRoutes;
+import handlers.AuthHandler;
 import handlers.Chat2Handler;
 import handlers.ChatHandler;
-import handlers.AuthHandler;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonArray;
@@ -14,6 +14,7 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.sockjs.BridgeOptions;
 import io.vertx.ext.web.handler.sockjs.PermittedOptions;
 import io.vertx.ext.web.handler.sockjs.SockJSHandler;
+import io.vertx.ext.web.handler.sockjs.SockJSHandlerOptions;
 import io.vertx.redis.RedisClient;
 import io.vertx.redis.RedisOptions;
 
@@ -37,8 +38,9 @@ public class VertxRoutes implements ApplicationVertxRoutes {
     public void init(Router router, Vertx vertx) {
 
         router.route("/eventbus/*").handler(authHandler.get());
+        SockJSHandlerOptions sockJSHandlerOptions = new SockJSHandlerOptions().setHeartbeatInterval(15000);
         router.route("/eventbus/*")
-                .handler(SockJSHandler.create(vertx).bridge(
+                .handler(SockJSHandler.create(vertx, sockJSHandlerOptions).bridge(
                 new BridgeOptions()
                         .addInboundPermitted(new PermittedOptions().setAddress("chat.to.server"))
                         .addInboundPermitted(new PermittedOptions().setAddress("chat_to_server"))
