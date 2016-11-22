@@ -190,7 +190,7 @@
         <dependency>
             <groupId>com.jiabangou</groupId>
             <artifactId>ninja-vertx-standalone</artifactId>
-            <version>0.1</version>
+            <version>${parent.version}</version>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
@@ -201,6 +201,11 @@
             <groupId>io.vertx</groupId>
             <artifactId>vertx-redis-client</artifactId>
             <version>3.3.3</version>
+        </dependency>
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>2.9.0</version>
         </dependency>
         <dependency>
             <groupId>org.ninjaframework</groupId>

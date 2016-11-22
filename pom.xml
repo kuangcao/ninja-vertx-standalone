@@ -21,15 +21,6 @@
     </scm>
 
     <distributionManagement>
-        <!--<snapshotRepository>-->
-        <!--<id>oss</id>-->
-        <!--<url>https://oss.sonatype.org/content/repositories/snapshots</url>-->
-        <!--</snapshotRepository>-->
-        <!--<repository>-->
-        <!--<id>oss</id>-->
-        <!--<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>-->
-        <!--</repository>-->
-
         <snapshotRepository>
             <id>jbg</id>
             <name>meicanyun Snapshot</name>
@@ -53,17 +44,6 @@
         <module>ninja-vertx-standalone</module>
         <module>ninja-vertx-sample</module>
     </modules>
-
-    <!--<distributionManagement>-->
-        <!--<snapshotRepository>-->
-            <!--<id>oss</id>-->
-            <!--<url>https://oss.sonatype.org/content/repositories/snapshots</url>-->
-        <!--</snapshotRepository>-->
-        <!--<repository>-->
-            <!--<id>oss</id>-->
-            <!--<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>-->
-        <!--</repository>-->
-    <!--</distributionManagement>-->
 
     <profiles>
         <profile>
