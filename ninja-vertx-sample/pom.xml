@@ -5,7 +5,7 @@
     <parent>
         <artifactId>ninja-vertx</artifactId>
         <groupId>com.jiabangou</groupId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.1</version>
     </parent>
 
     <artifactId>ninja-vertx-sample</artifactId>
@@ -190,7 +190,7 @@
         <dependency>
             <groupId>com.jiabangou</groupId>
             <artifactId>ninja-vertx-standalone</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>0.1</version>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
