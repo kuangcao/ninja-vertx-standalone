@@ -5,7 +5,7 @@
     <parent>
         <artifactId>ninja-vertx</artifactId>
         <groupId>com.jiabangou</groupId>
-        <version>0.1</version>
+        <version>0.2</version>
     </parent>
 
     <artifactId>ninja-vertx-sample</artifactId>

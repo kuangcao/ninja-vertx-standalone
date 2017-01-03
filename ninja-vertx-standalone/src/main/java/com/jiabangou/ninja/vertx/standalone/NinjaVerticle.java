@@ -42,7 +42,6 @@ public class NinjaVerticle extends AbstractVerticle {
 
         bootstrap.getInjector().getInstance(ApplicationVertxRoutes.class).init(router, vertx);
 
-        router.route().handler(ninjaHandlerProvider.get());
         httpServer = vertx.createHttpServer();
         httpServer.requestHandler(router::accept).listen(getPort(), res -> {
             if (res.succeeded()) {

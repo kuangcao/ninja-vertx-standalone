@@ -19,21 +19,14 @@ package conf;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import com.jiabangou.ninja.vertx.standalone.NinjaVertx;
-import ninja.utils.NinjaProperties;
 
 @Singleton
 public class Module extends AbstractModule {
 
-    private final NinjaProperties ninjaProperties;
-
-
-    public Module(NinjaProperties ninjaProperties) {
-        this.ninjaProperties = ninjaProperties;
-    }
 
 
     protected void configure() {
-        bind(PubSub.class);
+
     }
 
     public static void main(String[] args) {

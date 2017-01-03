@@ -1,6 +1,5 @@
 package com.jiabangou.ninja.vertx.standalone;
 
-import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.jiabangou.ninja.vertx.standalone.guice.GuiceVerticleFactory;
 import io.vertx.core.*;
@@ -25,11 +24,16 @@ public class VertxInitializer {
     /**
      * The default number of event loop threads to be used  = 2 * number of cores on the machine
      */
-    public static final int DEFAULT_WORKER_POOL_SIZE = 2 * Runtime.getRuntime().availableProcessors();
+    public static final int DEFAULT_EVENT_LOOP_POOL_SIZE = 2 * Runtime.getRuntime().availableProcessors();
     public static final String VERTX_IS_WORKER = "vertx.isWorker";
+    public static final String VERTX_WORKER_POOL_SIZE = "vertx.workerPoolSize";
     public static final String VERTX_IS_CLUSTERED = "vertx.isClustered";
     public static final String VERTX_IS_METRICS_ENABLED = "vertx.isMetricsEnabled";
+    public static final String VERTX_INSTANCES = "vertx.instances";
+    public static final String VERTX_EVENT_LOOP_SIZE = "vertx.eventLoopSize";
 
+    public static final String VERTX_MAX_WORKER_EXECITE_TIME = "vertx.maxWorkerExecuteTime";
+    public static final String VERTX_MAX_EVENTLOOP_EXECUTE_TIME = "vertx.maxEventLoopExecuteTime";
 
     private DeploymentOptions deploymentOptions;
     private VertxOptions options;
@@ -44,16 +48,23 @@ public class VertxInitializer {
 
     public VertxInitializer(NinjaProperties ninjaProperties) {
         options = new VertxOptions()
-                .setClustered(ninjaProperties.getBooleanWithDefault(VERTX_IS_CLUSTERED, false));
+                .setClustered(ninjaProperties.getBooleanWithDefault(VERTX_IS_CLUSTERED, false))
+                .setEventLoopPoolSize(ninjaProperties.getIntegerWithDefault(VERTX_EVENT_LOOP_SIZE,DEFAULT_EVENT_LOOP_POOL_SIZE))
+                .setMaxEventLoopExecuteTime(Long.valueOf(ninjaProperties.getWithDefault(VERTX_MAX_EVENTLOOP_EXECUTE_TIME,"2000000000")))
+                .setWorkerPoolSize(ninjaProperties.getIntegerWithDefault(VERTX_WORKER_POOL_SIZE, 20))
+                .setMaxWorkerExecuteTime(Long.valueOf(ninjaProperties.getWithDefault(VERTX_MAX_WORKER_EXECITE_TIME,"60000000000")));
+
 
         if (ninjaProperties.getBooleanWithDefault(VERTX_IS_METRICS_ENABLED, false)) {
             options.setMetricsOptions(new MetricsOptions().setEnabled(true));
         }
 
-        deploymentOptions = new DeploymentOptions();
+        deploymentOptions = new DeploymentOptions().setInstances(ninjaProperties.getIntegerWithDefault(VERTX_INSTANCES, 1));
+
         if (ninjaProperties.getBooleanWithDefault(VERTX_IS_WORKER, true)) {
-            deploymentOptions.setWorker(true).setWorkerPoolName("ninja-vertx").setInstances(
-                    ninjaProperties.getIntegerWithDefault("vertx.workerPoolSize", DEFAULT_WORKER_POOL_SIZE));
+            deploymentOptions
+                    .setWorker(true)
+                    .setWorkerPoolName("ninja-vertx");
         }
         if (options.isClustered()) {
             CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -89,7 +100,6 @@ public class VertxInitializer {
 
     @Start(order = 90)
     public void start() {
-
         CountDownLatch countDownLatch = new CountDownLatch(1);
 
         Handler<AsyncResult<String>> handler = stringAsyncResult -> {
@@ -97,6 +107,7 @@ public class VertxInitializer {
         };
 
         verticleID = GuiceVerticleFactory.PREFIX + ":" + NinjaVerticle.class.getName();
+
         runner = vertex -> {
             try {
                 if (deploymentOptions != null) {

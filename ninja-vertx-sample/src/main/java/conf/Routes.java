@@ -17,6 +17,7 @@
 package conf;
 
 
+import controllers.TestController;
 import ninja.AssetsController;
 import ninja.Router;
 import ninja.application.ApplicationRoutes;
@@ -27,11 +28,8 @@ public class Routes implements ApplicationRoutes {
     @Override
     public void init(Router router) {  
         
-        router.GET().route("/").with(ApplicationController.class, "index");
-        router.GET().route("/chat").with(ApplicationController.class, "chat");
-        router.GET().route("/chat2").with(ApplicationController.class, "chat2");
-        router.GET().route("/hello_world.json").with(ApplicationController.class, "helloWorldJson");
-        
+        router.GET().route("/test.json").with(TestController.class, "test");
+
         ///////////////////////////////////////////////////////////////////////
         // Assets (pictures / javascript)
         ///////////////////////////////////////////////////////////////////////    
