@@ -7,6 +7,7 @@ import com.jiabangou.ninja.vertx.standalone.NinjaHandler;
 import handlers.AuthHandler;
 import handlers.Chat2Handler;
 import handlers.ChatHandler;
+import handlers.ThreadSafeTestHandler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.Router;
 
@@ -23,8 +24,14 @@ public class VertxRoutes implements ApplicationVertxRoutes {
     @Inject
     private Provider<NinjaHandler> ninjaHandlerProvider;
 
+    // 不能直接用Handler
+    @Inject
+    private ThreadSafeTestHandler threadSafeTestHandler;
+
     @Override
     public void init(Router router, Vertx vertx) {
+        //直接用Handler会存在线程安全问题
+        router.route("/threadsafe.txt").handler(threadSafeTestHandler);
         router.route().blockingHandler(ninjaHandlerProvider.get(),false);
     }
 
